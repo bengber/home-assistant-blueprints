@@ -1,0 +1,186 @@
+# lutron-sunnata-led-control-blueprint.yaml - control Lutron Sunnata Keypad LEDs with Home Assistant
+#
+#  Copyright 2026 Benjamin ENgber
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+blueprint:
+  name: Lutron Sunnata Keypad LED Control
+  description: '
+    This automation is used to synchronize the LEDs on a Lutron Sunnata keypad
+    to the state of an external entity. The idea is that the LED will be
+    ''on'' when the control it is connected to is in an activated state. 
+    The state of the LED will always reflect the state of the linked entity,
+    regardless of whether the keypad was used to control the entity.
+    
+
+    The following entity types are supported.
+
+
+      - **Lights** -- LED will be on when the light is ''on''
+
+      - **Switches** -- LED will be on when the switch is ''on''
+
+      - **Covers (Shades)** -- LED will be on when the cover is ''open''
+
+      - **Media Players** -- LED will be on when the media player is ''playing''
+
+      - **Alarm Control Panels** -- LED will be on when the alarm is armed (one of ''armed_away'', ''armed_home'', ''armed_night'', ''armed_vacation'', or ''armed_custom_bypass''
+
+
+    To get LED behavior analogous to the Lutron Designer''s ***Scene Toggle***, you can use the
+    [Stateful Scenes](https://github.com/hugobloem/stateful_scenes) integration. Associating an LED 
+    with a Stateful Scene''s **Switch** will cause the LED to be lit exactly when all the elements
+    in the scene are in their defined states.
+
+
+    To get similar behavior to Lutron''s ***Zone Toggle***, create a **Group** of supported 
+    devices. This will cause the LED to be lit if *any* of the devices are active.
+    '
+    
+  domain: automation
+
+  input:
+    synced_keypad:
+      name: "Keypad to sync"
+      description: "The Sunnata Keypad or Hybrid Keypad to control"
+      selector:
+        device:
+          filter:
+          - integration: lutron_caseta
+            model: RRST-W2B-XX (SunnataKeypad)
+          - integration: lutron_caseta
+            model: RRST-HN2B-XX (SunnataHybridKeypad)
+          - integration: lutron_caseta
+            model: RRST-W3RL-XX (SunnataKeypad)
+          - integration: lutron_caseta
+            model: RRST-HN3RL-XX (SunnataHybridKeypad)
+          - integration: lutron_caseta
+            model: RRST-W4B-XX (SunnataKeypad)
+          - integration: lutron_caseta
+            model: RRST-HN4B-XX (SunnataHybridKeypad)
+          multiple: false
+    led_1_sync_entity:
+      name: "LED 1 Synced Entity"
+      description: "(Optional) Top LED will be on when this entity is active."
+      default: optional_entity.ok_to_leave_blank
+      selector:
+        entity:
+          filter:
+            - domain: 
+              - light
+              - switch
+              - cover
+              - alarm_control_panel
+              - media_player
+    led_2_sync_entity:
+      name: "LED 2 Synced Entity"
+      description: "(Optional) Second LED will be on when this entity is active."
+      default: optional_entity.ok_to_leave_blank
+      selector:
+        entity:
+          filter:
+            - domain: 
+              - light
+              - switch
+              - cover
+              - alarm_control_panel
+              - media_player
+    led_3_sync_entity:
+      name: "LED 3 Synced Entity"
+      description: "(Optional) For 3 or 4 button keypads, the third LED will be on when this entity is active."
+      default: optional_entity.ok_to_leave_blank
+      selector:
+        entity:
+          filter:
+            - domain: 
+              - light
+              - switch
+              - cover
+              - alarm_control_panel
+              - media_player
+    led_4_sync_entity:
+      name: "LED 4 Synced Entity"
+      description: "(Optional) For 4 button keypads, the fourth (bottom) LED will be on when this device is active."
+      default: optional_entity.ok_to_leave_blank
+      selector:
+        entity:
+          filter:
+            - domain: 
+              - light
+              - switch
+              - cover
+              - alarm_control_panel
+              - media_player
+
+triggers:
+  - trigger: state
+    entity_id:
+      - !input led_1_sync_entity
+      - !input led_2_sync_entity
+      - !input led_3_sync_entity
+      - !input led_4_sync_entity
+    to: null
+    variables:
+      new_device_state: "{{ trigger.to_state.state }}"
+      triggered_entity: "{{ trigger.entity_id }}"
+      entity_type: "{{ triggered_entity.split('.')[0] }}"
+      target_on_states: |-
+        {% if entity_type == 'switch' or entity_type == 'light' -%}
+          - on
+        {%- elif entity_type == 'media_player' -%}
+          - playing
+        {%- elif entity_type == 'cover' -%}
+          - open
+        {%- elif entity_type == 'alarm_control_panel' -%}
+          - armed_away
+          - armed_home
+          - armed_night
+          - armed_vacation
+          - armed_custom_bypass
+        {%- endif %}
+conditions:
+  - condition: template
+    value_template: >-
+      {# if any of the leds are unavailable, just to be safe, don't run #} {{
+      keypad_leds | select('is_state', 'unavailable') | list | length == 0 }}
+actions:
+  - if:
+      - condition: template
+        value_template: "{{ new_device_state in target_on_states }}"
+    then:
+      - action: switch.turn_on
+        metadata: {}
+        target:
+          entity_id: "{{ keypad_leds[linked_leds.index(triggered_entity)] }}"
+        data: {}
+    else:
+      - action: switch.turn_off
+        metadata: {}
+        target:
+          entity_id: "{{ keypad_leds[linked_leds.index(triggered_entity)] }}"
+        data: {}
+mode: single
+variables:
+  linked_keypad_device: !input synced_keypad
+  keypad_leds: >-
+    {{ device_entities(linked_keypad_device) | select('match', 'switch') | list
+    }}
+  linked_leds:
+    - !input led_1_sync_entity
+    - !input led_2_sync_entity
+    - !input led_3_sync_entity
+    - !input led_4_sync_entity
+
+
+
