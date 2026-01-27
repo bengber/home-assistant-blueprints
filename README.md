@@ -10,7 +10,7 @@ The functionality is packaged as two separate automation blueprints, because the
 
 | Lutron Sunnata Keypad Click/Long-Click/Double-Click | Lutron Sunnata Keypad LED Control |
 | -------- | ------- |
-| [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https://github.com/berngber/home-assistant-blueprints/blob/main/blueprints/automation/lutron-sunnata-keypad-click-long-click-double-click.yaml  | [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https://github.com/bengber/home-assistant-blueprints/blob/main/blueprints/automation/lutron-sunnata-led-control-blueprint.yaml)    |
+| [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https://github.com/bengber/home-assistant-blueprints/blob/main/blueprints/automation/lutron-sunnata-keypad-click-long-click-double-click.yaml)  | [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https://github.com/bengber/home-assistant-blueprints/blob/main/blueprints/automation/lutron-sunnata-led-control-blueprint.yaml)    |
 
 
 
