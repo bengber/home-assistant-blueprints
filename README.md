@@ -1,7 +1,14 @@
 # Lutron Sunnata Keypad Blueprints
 
 Blueprints for integrating Lutron Sunnata RadioRA3 keypads with Home Assistant.
-These are designed to emulate the same scene and LED behaviors as in the Lutron designer software, but including non-Lutron devices. It also supports double click and long press actions for each button, in addition to the standard single press behavior.
+
+##Goals##
+
+- Enable controls (buttons, LEDs) to operate with non-Lutron devides in equivalent ways as Lutron devices are 
+  configured in RadioRA3
+- Support additional kinds of keypad interactions, specifically double clicking and long press/release
+
+## Usage
 
 The functionality is packaged as two separate automation blueprints, because the automations are called at different times with different concurrency needs.
 
@@ -10,14 +17,15 @@ The functionality is packaged as two separate automation blueprints, because the
 
 | Lutron Sunnata Keypad Click/Long-Click/Double-Click | Lutron Sunnata Keypad LED Control |
 | -------- | ------- |
-| [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https://github.com/bengber/home-assistant-blueprints/blob/main/blueprints/automation/lutron-sunnata-keypad-click-long-click-double-click.yaml)  | [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https://github.com/bengber/home-assistant-blueprints/blob/main/blueprints/automation/lutron-sunnata-led-control-blueprint.yaml)    |
+| [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https://github.com/bengber/home-assistant-blueprints/blob/main/blueprints/automation/lutron-sunnata-keypad-click-long-click-double-click.yaml)  | [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https://github.com/bengber/home-assistant-blueprints/blob/main/blueprints/automation/lutron-sunnata-keypad-led-control-blueprint.yaml)    |
 
 
+**Important:** Button release events are only fired when the button is configured as ***Single Action*** in the Lutron designer software. This means that *Lutron Sunnata Keypad Click/Long-Click/Double-Click* will not work correctly for buttons configured as ***Scene Toggle*** or ***Zone Toggle*** in the software. Both of these behaviors can be easily emulated by binding the scripts to a [Stateful Scene](https://github.com/hugobloem/stateful_scenes) switch (for *Scene Toggle*) or to a [Group](https://www.home-assistant.io/integrations/group/) entity (for *Zone Toggle*).
 
-## Features
-- **Single Click, Double Click, Long Press Detection** - Events fire as quickly as possible given what is configured
-- **Configurable Timeouts** - Adjust sensitivity for long press and double click detection
-- **Support for All Sunnata Models** - Works with 2, 3, and 4 button keypads, plus hybrid keypads
+1. Install both the **Lutron Sunnata Keypad Click/Long-Click/Double-Click** and **Lutron Sunnata Keypad LED Control** blueprints above.
+2. For the buttons you want to automate, go the Lutron Designer software and set the behavior to *Single Action*.
+3. Create a **Lutron Sunnata Keypad Click/Long-Click/Double-Click** automation for that keypad, defining appropriate actions for the button or buttons.
+4. Create a **Lutron Sunnata Keypad LED Control** automation for the keypad, defining the entity to synchronize to LED state for each button you want to control.
 
 ## Supported Devices
 
@@ -48,26 +56,14 @@ Then paste the raw GitHub URL of the blueprint file.
 
 ### Option 2: Manual Installation
 
-1. Download the `sunnata-click-detection.yaml` file
+1. Download the `lutron-sunnata-keypad-click-long-click-double-click.yaml` and `lutron-sunnata-keypad-led-control-blueprint.yaml` files
 2. Copy it to your Home Assistant `config/blueprints/automation/` directory
 3. Restart Home Assistant or reload automations
 
-## Usage
 
-### Basic Setup
+## Configuration Options
 
-1. Go to **Settings → Automations & Scenes**
-2. Click **Create Automation → Use Blueprint**
-3. Select **Lutron Sunnata Keypad Click/Long-Click/Double-Click**
-4. Select your Sunnata keypad from the device list
-5. Configure actions for each button type you want to use
-6. Click **Create Automation → Use Blueprint**
-7. Select **Lutron Sunnata Keypad LED Control**
-8. Choose which devices, groups, stateful scennes, or other entities to associate with each LED you want to control
-
-### Configuration Options
-
-#### Button Groups
+### Button Groups
 
 Each button (1-4, Lower, Raise) has its own collapsible group with four action types:
 
@@ -76,7 +72,7 @@ Each button (1-4, Lower, Raise) has its own collapsible group with four action t
 - **Long Press** - Fires when the button is held down (leave empty to disable detection)
 - **Release After Long Press** - Fires when a long-pressed button is released
 
-#### Advanced Settings
+### Advanced Settings
 
 - **Long Press Timeout** (default: 500ms) - How long to hold before triggering a long press
 - **Double Click Timeout** (default: 250ms) - Maximum time between clicks for double-click detection
@@ -91,20 +87,13 @@ The blueprint intelligently handles button press detection:
 4. **Double click detection** → Waits for a second press within the timeout window
 5. **Single click as fallback** → If no double-click detected, single click fires
 
-### Example Use Cases
 
-#### Example 1: Simple Light Toggle
+## Example Use Cases
 
-**Button 1 - Single Click:** Toggle a light
-```yaml
-- action: light.toggle
-  target:
-    entity_id: light.living_room
-```
+### Example 1: Light with Different Brightness Settings
+Use a single button for on/dim/off behavior in a light. Also remmember to associate the light with the Button 1 LED using the *Lutron Sunnata Keypad LED Control* blueprint.
 
-#### Example 2: Dimmer Control
-
-**Button 2 - Single Click:** Turn on at 50% brightness
+**Button 1 - Single Click:** Turn on at 50% brightness
 ```yaml
 - action: light.turn_on
   target:
@@ -113,7 +102,7 @@ The blueprint intelligently handles button press detection:
     brightness_pct: 50
 ```
 
-**Button 2 - Double Click:** Turn on at 100% brightness
+**Button 1 - Double Click:** Turn on at 100% brightness
 ```yaml
 - action: light.turn_on
   target:
@@ -122,52 +111,54 @@ The blueprint intelligently handles button press detection:
     brightness_pct: 100
 ```
 
-**Button 2 - Long Press:** Turn off
+**Button 1 - Long Press:** Turn off
 ```yaml
 - action: light.turn_off
   target:
     entity_id: light.bedroom
 ```
 
-#### Example 3: Alarm Control with LED Warning
+### Example 2: Alarm Control with LED Warning
+Arms an alarm when the button is pressed, lighting the LEDS when the alarm is armed. Also remmember to associate the alarm_control_panel with the Button 2 LED using the *Lutron Sunnata Keypad LED Control* blueprint.
 
-**Button 3 - Single Click:** Arm home with 30-second LED warning
+**Button 2 - Single Click:** Arm home with 30-second warning
 ```yaml
-- action: script.arm_alarm_with_led_warning
+- action: script.arm_alarm_after_thirty_seconds
   data:
-    led_entity: switch.vestibule_keypad_leave_led
     arm_mode: arm_home
 ```
 
-**Button 3 - Double Click:** Arm away with warning
+**Button 2 - Double Click:** Arm away with 30-second warning
 ```yaml
-- action: script.arm_alarm_with_led_warning
+- action: script.arm_alarm_after_thirty_seconds
   data:
-    led_entity: switch.vestibule_keypad_leave_led
     arm_mode: arm_away
 ```
 
-*(Note: Requires a separate `arm_alarm_with_led_warning` script)*
+*(Note: Requires a separate `arm_alarm_after_thirty_seconds` script)*
 
-#### Example 4: Scene Control
+### Example 3: Scene Control
+Uses a Stateful Scene switch to keep LED in sync. Also remmember to associate the switch with the Button 3 LED using the *Lutron Sunnata Keypad LED Control* blueprint.
 
-**Button 4 - Single Click:** Activate "Movie Time" scene
+**Button 3 - Single Click:** Activate "Movie Time" scene
 ```yaml
-- action: scene.turn_on
+- action: scene_switch.turn_on
   target:
-    entity_id: scene.movie_time
+    entity_id: scene_switch.movie_time
 ```
 
-**Button 4 - Double Click:** Activate "Bedtime" scene
+**Button 3 - Double Click:** Activate "Bedtime" scene
 ```yaml
-- action: scene.turn_on
+- action: scene_switch.turn_on
   target:
-    entity_id: scene.bedtime
+    entity_id: scene_switch.bedtime
 ```
 
-#### Example 5: Multi-Action Sequence
+### Example 4: Multi-Action Sequence
 
-**Lower Button - Long Press:** Turn off all lights
+**Lower Button - Long Press:** Turn off all lights in sequence
+In this case, the Button 4 LED can emulate *Zone Toggle* behavior (LED lit if *any* light is on) by creating a **Group** of lights and associating that Group to Button 4 using the *Lutron Sunnata Keypad LED Control* blueprint.
+
 ```yaml
 - action: light.turn_off
   target:
@@ -179,14 +170,6 @@ The blueprint intelligently handles button press detection:
     area_id: kitchen
 ```
 
-## Tips and Best Practices
-
-
-### Avoiding Conflicts
-
-- Each button press is handled in `mode: single`, meaning rapid presses are queued
-- If you need truly simultaneous button handling, consider creating separate automations per button
-- The automation will ignore button presses while processing a long press or double-click detection
 
 ## Troubleshooting
 
