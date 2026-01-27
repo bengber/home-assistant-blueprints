@@ -14,7 +14,7 @@
 #   limitations under the License.
 
 blueprint:
-  name: Lutron Sunnata Keypad Click/Long-Click/Double-Click
+  name: Lutron Sunnata Keypad Click/Long Click/Double Click
   description: >
     Advanced button press detection for Lutron Sunnata keypads supporting
     single click, double click, and long press actions for each button.

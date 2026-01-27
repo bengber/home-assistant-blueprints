@@ -12,20 +12,20 @@ Blueprints for integrating Lutron Sunnata RadioRA3 keypads with Home Assistant.
 
 The functionality is packaged as two separate automation blueprints, because the automations are called at different times with different concurrency needs.
 
-- **Lutron Sunnata Keypad Click/Long-Click/Double-Click** - for handling different kinds of button events
+- **Lutron Sunnata Keypad Click/Long Click/Double Click** - for handling different kinds of button events
 - **Lutron Sunnata Keypad LED Control** - synchronizes the keypad LEDs to the states of external devices, replicating the *Scene Toggle* or *Zone Toggle* options in the Lutron designer software, but including non-Lutron devices
 
-| Lutron Sunnata Keypad Click/Long-Click/Double-Click | Lutron Sunnata Keypad LED Control |
+| Lutron Sunnata Keypad Click/Long Click/Double Click | Lutron Sunnata Keypad LED Control |
 | -------- | ------- |
 | [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https://github.com/bengber/home-assistant-lutron-sunnata-blueprints/blob/main/blueprints/automation/lutron-sunnata-keypad-click-long-click-double-click.yaml)  | [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https://github.com/bengber/home-assistant-lutron-sunnata-blueprints/blob/main/blueprints/automation/lutron-sunnata-keypad-led-control-blueprint.yaml)    |
 
 
 ### Important:
-Button release events are only fired when the button is configured as ***Single Action*** in the Lutron designer software. This means that *Lutron Sunnata Keypad Click/Long-Click/Double-Click* will not work correctly for buttons configured as ***Scene Toggle*** or ***Zone Toggle*** in the software. Both of these behaviors can be easily emulated by binding the scripts to a [Stateful Scene](https://github.com/hugobloem/stateful_scenes) switch (for *Scene Toggle*) or to a [Group](https://www.home-assistant.io/integrations/group/) entity (for *Zone Toggle*).
+Button release events are only fired when the button is configured as ***Single Action*** in the Lutron designer software. This means that *Lutron Sunnata Keypad Click/Long Click/Double Click* will not work correctly for buttons configured as ***Scene Toggle*** or ***Zone Toggle*** in the software. Both of these behaviors can be easily emulated by binding the scripts to a [Stateful Scene](https://github.com/hugobloem/stateful_scenes) switch (for *Scene Toggle*) or to a [Group](https://www.home-assistant.io/integrations/group/) entity (for *Zone Toggle*).
 
-1. Install both the **Lutron Sunnata Keypad Click/Long-Click/Double-Click** and **Lutron Sunnata Keypad LED Control** blueprints above.
+1. Install both the **Lutron Sunnata Keypad Click/Long Click/Double Click** and **Lutron Sunnata Keypad LED Control** blueprints above.
 2. For the buttons you want to automate, go the Lutron Designer software and set the behavior to *Single Action*.
-3. Create a **Lutron Sunnata Keypad Click/Long-Click/Double-Click** automation for that keypad, defining appropriate actions for the button or buttons.
+3. Create a **Lutron Sunnata Keypad Click/Long Click/Double Click** automation for that keypad, defining appropriate actions for the button or buttons.
 4. Create a **Lutron Sunnata Keypad LED Control** automation for the keypad, defining the entity to synchronize to LED state for each button you want to control.
 
 ## Supported Devices
@@ -68,7 +68,7 @@ Then paste the raw GitHub URL of the blueprint file.
 
 Each button (1-4, Lower, Raise) has its own collapsible group with four action types:
 
-- **Single Click** - Fires immediately for a quick press (or after double-click timeout if double-click is configured)
+- **Single Click** - Fires immediately for a quick press (or after double-click timeout if double click is configured)
 - **Double Click** - Fires when the button is pressed twice quickly (leave empty to disable detection)
 - **Long Press** - Fires when the button is held down (leave empty to disable detection)
 - **Release After Long Press** - Fires when a long-pressed button is released
@@ -86,7 +86,7 @@ The blueprint intelligently handles button press detection:
 2. **If long press OR double click is enabled** → Blueprint waits to determine the press type
 3. **Long press takes priority** → If held beyond the timeout, long press fires
 4. **Double click detection** → Waits for a second press within the timeout window
-5. **Single click as fallback** → If no double-click detected, single click fires
+5. **Single click as fallback** → If no double click detected, single click fires
 
 
 ## Example Use Cases
