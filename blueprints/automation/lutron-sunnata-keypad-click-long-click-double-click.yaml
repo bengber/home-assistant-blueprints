@@ -49,7 +49,7 @@ blueprint:
           multiple: false
     
     button_1_group:
-      name: "Button 1 (Top)"
+      name: "Button 1 (Top Button) Actions"
       icon: mdi:numeric-1-box
       collapsed: true
       input:
@@ -79,7 +79,7 @@ blueprint:
             action: {}
 
     button_2_group:
-      name: "Button 2"
+      name: "Button 2 Actions"
       icon: mdi:numeric-2-box
       collapsed: true
       input:
@@ -109,7 +109,7 @@ blueprint:
             action: {}
     
     button_3_group:
-      name: "Button 3"
+      name: "Button 3 Actions"
       icon: mdi:numeric-3-box
       collapsed: true
       input:
@@ -139,7 +139,7 @@ blueprint:
             action: {}
     
     button_4_group:
-      name: "Button 4 (bottom)"
+      name: "Button 4 (Button Button) Actions"
       icon: mdi:numeric-4-box
       collapsed: true
       input:
@@ -169,7 +169,7 @@ blueprint:
             action: {}
 
     lower_button_group:
-      name: "Lower Button (down arrow)"
+      name: "Lower Button (down arrow) Actions"
       icon: mdi:arrow-down-bold-box
       collapsed: true
       input: 
@@ -199,7 +199,7 @@ blueprint:
             action: {}
 
     raise_button_group:
-      name: "Raise Button (up arrow)"
+      name: "Raise Button (up arrow) Actions"
       icon: mdi:arrow-up-bold-box
       collapsed: true
       input: 
@@ -229,7 +229,7 @@ blueprint:
             action: {}
         
     advanced_settings_group:
-      name: "Lower Button (down arrow)"
+      name: "Advanced Settings"
       icon: mdi:cog
       collapsed: true
       input: 
