@@ -2,7 +2,7 @@
 
 Blueprints for integrating Lutron Sunnata RadioRA3 keypads with Home Assistant.
 
-##Goals##
+## Goals
 
 - Enable controls (buttons, LEDs) to operate with non-Lutron devides in equivalent ways as Lutron devices are 
   configured in RadioRA3
