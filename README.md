@@ -30,7 +30,7 @@ The functionality is packaged as two separate automation blueprints, because the
 
 ## Requirements
 
-- Home Assistant 2024.1 or newer
+- Home Assistant 2024.6 or newer
 - Lutron Caseta integration configured
 - At least one Sunnata keypad connected to your Lutron controller
 
