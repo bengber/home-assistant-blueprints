@@ -32,8 +32,8 @@ Button release events are only fired when the button is configured as ***Single 
 
 - RRST-W2B-XX (Sunnata 2-Button Keypad)
 - RRST-HN2B-XX (Sunnata Hybrid 2-Button Keypad)
-- RRST-W3RL-XX (Sunnata 3-Button Keypad)
-- RRST-HN3RL-XX (Sunnata Hybrid 3-Button Keypad)
+- RRST-W3RL-XX (Sunnata 3-Button Keypad with Raise/Lower)
+- RRST-HN3RL-XX (Sunnata Hybrid 3-Button Keypad with Raise/Lower)
 - RRST-W4B-XX (Sunnata 4-Button Keypad)
 - RRST-HN4B-XX (Sunnata Hybrid 4-Button Keypad)
 
