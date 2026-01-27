@@ -48,240 +48,211 @@ blueprint:
               model: RRST-HN4B-XX (SunnataHybridKeypad)
           multiple: false
     
-    # Button 1 Group
-    button_1_single_click:
-      name: Single Click Action
-      description: Action to perform on single click of button 1
-      default: []
-      selector:
-        action: {}
-      group: button_1
-    button_1_double_click:
-      name: Double Click Action
-      description: Action to perform on double click of button 1 (leave empty to disable double-click detection)
-      default: []
-      selector:
-        action: {}
-      group: button_1
-    button_1_long_press:
-      name: Long Press Action
-      description: Action to perform on long press of button 1 (leave empty to disable long-press detection)
-      default: []
-      selector:
-        action: {}
-      group: button_1
-    button_1_release:
-      name: Release After Long Press Action
-      description: Action to perform when button 1 is released after a long press
-      default: []
-      selector:
-        action: {}
-      group: button_1
-    
-    # Button 2 Group
-    button_2_single_click:
-      name: Single Click Action
-      description: Action to perform on single click of button 2
-      default: []
-      selector:
-        action: {}
-      group: button_2
-    button_2_double_click:
-      name: Double Click Action
-      description: Action to perform on double click of button 2
-      default: []
-      selector:
-        action: {}
-      group: button_2
-    button_2_long_press:
-      name: Long Press Action
-      description: Action to perform on long press of button 2
-      default: []
-      selector:
-        action: {}
-      group: button_2
-    button_2_release:
-      name: Release After Long Press Action
-      description: Action to perform when button 2 is released after a long press
-      default: []
-      selector:
-        action: {}
-      group: button_2
-    
-    # Button 3 Group
-    button_3_single_click:
-      name: Single Click Action
-      description: Action to perform on single click of button 3 (for 3+ button keypads)
-      default: []
-      selector:
-        action: {}
-      group: button_3
-    button_3_double_click:
-      name: Double Click Action
-      description: Action to perform on double click of button 3
-      default: []
-      selector:
-        action: {}
-      group: button_3
-    button_3_long_press:
-      name: Long Press Action
-      description: Action to perform on long press of button 3
-      default: []
-      selector:
-        action: {}
-      group: button_3
-    button_3_release:
-      name: Release After Long Press Action
-      description: Action to perform when button 3 is released after a long press
-      default: []
-      selector:
-        action: {}
-      group: button_3
-    
-    # Button 4 Group
-    button_4_single_click:
-      name: Single Click Action
-      description: Action to perform on single click of button 4 (for 4 button keypads)
-      default: []
-      selector:
-        action: {}
-      group: button_4
-    button_4_double_click:
-      name: Double Click Action
-      description: Action to perform on double click of button 4
-      default: []
-      selector:
-        action: {}
-      group: button_4
-    button_4_long_press:
-      name: Long Press Action
-      description: Action to perform on long press of button 4
-      default: []
-      selector:
-        action: {}
-      group: button_4
-    button_4_release:
-      name: Release After Long Press Action
-      description: Action to perform when button 4 is released after a long press
-      default: []
-      selector:
-        action: {}
-      group: button_4
-    
-    # Lower Button Group
-    button_lower_single_click:
-      name: Single Click Action
-      description: Action to perform on single click of lower button (hybrid keypads)
-      default: []
-      selector:
-        action: {}
-      group: button_lower
-    button_lower_double_click:
-      name: Double Click Action
-      description: Action to perform on double click of lower button
-      default: []
-      selector:
-        action: {}
-      group: button_lower
-    button_lower_long_press:
-      name: Long Press Action
-      description: Action to perform on long press of lower button
-      default: []
-      selector:
-        action: {}
-      group: button_lower
-    button_lower_release:
-      name: Release After Long Press Action
-      description: Action to perform when lower button is released after a long press
-      default: []
-      selector:
-        action: {}
-      group: button_lower
-    
-    # Raise Button Group
-    button_raise_single_click:
-      name: Single Click Action
-      description: Action to perform on single click of raise button (hybrid keypads)
-      default: []
-      selector:
-        action: {}
-      group: button_raise
-    button_raise_double_click:
-      name: Double Click Action
-      description: Action to perform on double click of raise button
-      default: []
-      selector:
-        action: {}
-      group: button_raise
-    button_raise_long_press:
-      name: Long Press Action
-      description: Action to perform on long press of raise button
-      default: []
-      selector:
-        action: {}
-      group: button_raise
-    button_raise_release:
-      name: Release After Long Press Action
-      description: Action to perform when raise button is released after a long press
-      default: []
-      selector:
-        action: {}
-      group: button_raise
-    
-    # Advanced Settings Group
-    long_press_timeout:
-      name: Long Press Timeout
-      description: How long (in milliseconds) before a press becomes a long press
-      default: 500
-      selector:
-        number:
-          min: 100
-          max: 2000
-          step: 50
-          unit_of_measurement: "ms"
-      group: advanced
-    double_click_timeout:
-      name: Double Click Timeout
-      description: Maximum time (in milliseconds) between clicks for double-click detection
-      default: 250
-      selector:
-        number:
-          min: 100
-          max: 1000
-          step: 50
-          unit_of_measurement: "ms"
-      group: advanced
-
-  # Define the selector groups
-  groups:
-    button_1:
+    button_1_group:
       name: "Button 1 (Top)"
       icon: mdi:numeric-1-box
       collapsed: true
-    button_2:
+      input:
+        button_1_single_click:
+          name: Single Click Action
+          description: Action to perform on single click of button 1
+          default: []
+          selector:
+            action: {}
+        button_1_double_click:
+          name: Double Click Action
+          description: Action to perform on double click of button 1 (leave empty to disable double-click detection)
+          default: []
+          selector:
+            action: {}
+        button_1_long_press:
+          name: Long Press Action
+          description: Action to perform on long press of button 1 (leave empty to disable long-press detection)
+          default: []
+          selector:
+            action: {}
+        button_1_release:
+          name: Release After Long Press Action
+          description: Action to perform when button 1 is released after a long press
+          default: []
+          selector:
+            action: {}
+
+    button_2_group:
       name: "Button 2"
       icon: mdi:numeric-2-box
       collapsed: true
-    button_3:
+      input:
+        button_2_single_click:
+          name: Single Click Action
+          description: Action to perform on single click of button 2
+          default: []
+          selector:
+            action: {}
+        button_2_double_click:
+          name: Double Click Action
+          description: Action to perform on double click of button 2
+          default: []
+          selector:
+            action: {}
+        button_2_long_press:
+          name: Long Press Action
+          description: Action to perform on long press of button 2
+          default: []
+          selector:
+            action: {}
+        button_2_release:
+          name: Release After Long Press Action
+          description: Action to perform when button 2 is released after a long press
+          default: []
+          selector:
+            action: {}
+    
+    button_3_group:
       name: "Button 3"
       icon: mdi:numeric-3-box
       collapsed: true
-    button_4:
-      name: "Button 4 (Bottom)"
+      input:
+        button_3_single_click:
+          name: Single Click Action
+          description: Action to perform on single click of button 3 (for 3+ button keypads)
+          default: []
+          selector:
+            action: {}
+        button_3_double_click:
+          name: Double Click Action
+          description: Action to perform on double click of button 3
+          default: []
+          selector:
+            action: {}
+        button_3_long_press:
+          name: Long Press Action
+          description: Action to perform on long press of button 3
+          default: []
+          selector:
+            action: {}
+        button_3_release:
+          name: Release After Long Press Action
+          description: Action to perform when button 3 is released after a long press
+          default: []
+          selector:
+            action: {}
+    
+    button_4_group:
+      name: "Button 4 (bottom)"
       icon: mdi:numeric-4-box
       collapsed: true
-    button_lower:
-      name: "Lower Button (Hybrid Keypads)"
+      input:
+        button_4_single_click:
+          name: Single Click Action
+          description: Action to perform on single click of button 4 (for 4 button keypads)
+          default: []
+          selector:
+            action: {}
+        button_4_double_click:
+          name: Double Click Action
+          description: Action to perform on double click of button 4
+          default: []
+          selector:
+            action: {}
+        button_4_long_press:
+          name: Long Press Action
+          description: Action to perform on long press of button 4
+          default: []
+          selector:
+            action: {}
+        button_4_release:
+          name: Release After Long Press Action
+          description: Action to perform when button 4 is released after a long press
+          default: []
+          selector:
+            action: {}
+
+    lower_button_group:
+      name: "Lower Button (down arrow)"
       icon: mdi:arrow-down-bold-box
       collapsed: true
-    button_raise:
-      name: "Raise Button (Hybrid Keypads)"
+      input: 
+        button_lower_single_click:
+          name: Single Click Action
+          description: Action to perform on single click of lower button (hybrid keypads)
+          default: []
+          selector:
+            action: {}
+        button_lower_double_click:
+          name: Double Click Action
+          description: Action to perform on double click of lower button
+          default: []
+          selector:
+            action: {}
+        button_lower_long_press:
+          name: Long Press Action
+          description: Action to perform on long press of lower button
+          default: []
+          selector:
+            action: {}
+        button_lower_release:
+          name: Release After Long Press Action
+          description: Action to perform when lower button is released after a long press
+          default: []
+          selector:
+            action: {}
+
+    raise_button_group:
+      name: "Raise Button (up arrow)"
       icon: mdi:arrow-up-bold-box
       collapsed: true
-    advanced:
-      name: "Advanced Settings"
+      input: 
+        button_raise_single_click:
+          name: Single Click Action
+          description: Action to perform on single click of raise button (hybrid keypads)
+          default: []
+          selector:
+            action: {}
+        button_raise_double_click:
+          name: Double Click Action
+          description: Action to perform on double click of raise button
+          default: []
+          selector:
+            action: {}
+        button_raise_long_press:
+          name: Long Press Action
+          description: Action to perform on long press of raise button
+          default: []
+          selector:
+            action: {}
+        button_raise_release:
+          name: Release After Long Press Action
+          description: Action to perform when raise button is released after a long press
+          default: []
+          selector:
+            action: {}
+        
+    advanced_settings_group:
+      name: "Lower Button (down arrow)"
       icon: mdi:cog
       collapsed: true
+      input: 
+        long_press_timeout:
+          name: Long Press Timeout
+          description: How long (in milliseconds) before a press becomes a long press
+          default: 500
+          selector:
+            number:
+              min: 100
+              max: 2000
+              step: 50
+              unit_of_measurement: "ms"
+        double_click_timeout:
+          name: Double Click Timeout
+          description: Maximum time (in milliseconds) between clicks for double-click detection
+          default: 250
+          selector:
+            number:
+              min: 100
+              max: 1000
+              step: 50
+              unit_of_measurement: "ms"
 
 trigger_variables:
   sunnata_keypad_device: !input sunnata_keypad
