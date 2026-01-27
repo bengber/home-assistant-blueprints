@@ -459,4 +459,4 @@ actions:
               - conditions: ["{{ leap_number == 'leap_19' }}"]
                 sequence: !input button_raise_release
 
-mode: single¸
+mode: single
