@@ -23,9 +23,9 @@ blueprint:
     Single click events will fire immediately if long press and double click are not defined.
 
 
-    **NOTE:** In order to use the long press and double click handlers, the abutton needs to be set as 
-    ***Sinngle Action*** in the Lutron designer software. (Using either ***Scene Toggle*** or 
-    ***Zone Toggle*** will prevent the button release events from being fired.)
+    **NOTE:** In order to use the long press and double click handlers for buttons other than Raise/Lower, 
+    the button behavior needs to be set as ***Sinngle Action*** in the Lutron designer software. 
+    (Using either ***Scene Toggle*** or ***Zone Toggle*** will prevent the button release events from being fired.)
   domain: automation
   home_assistant:
     nin_version: 2024.6.0
@@ -177,7 +177,7 @@ blueprint:
       input: 
         button_lower_single_click:
           name: Single Click Action
-          description: Action to perform on single click of lower button (hybrid keypads)
+          description: Action to perform on single click of lower button
           default: []
           selector:
             action: {}
@@ -207,7 +207,7 @@ blueprint:
       input: 
         button_raise_single_click:
           name: Single Click Action
-          description: Action to perform on single click of raise button (hybrid keypads)
+          description: Action to perform on single click of raise button
           default: []
           selector:
             action: {}
