@@ -20,14 +20,17 @@ blueprint:
     single click, double click, and long press actions for each button.
     
     
-    Configure which buttons should detect double-clicks and long-presses
-    by adding actions to the corresponding inputs. The automation
-    will handle the timing detection automatically.
+    Single click events will fire immediately if long press and double click are not defined.
+
+
+    **NOTE:** In order to use the long press and double click handlers, the abutton needs to be set as 
+    ***Sinngle Action*** in the Lutron designer software. (Using either ***Scene Toggle*** or 
+    ***Zone Toggle*** will prevent the button release events from being fired.)
   domain: automation
   input:
     sunnata_keypad:
       name: Sunnata Keypad
-      description: The Lutron Sunnata keypad to monitor
+      description: The Lutron Sunnata keypad to control
       selector:
         device:
           filter:
