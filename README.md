@@ -157,7 +157,7 @@ Uses a Stateful Scene switch to keep LED in sync. Also remmember to associate th
 
 ### Example 4: Multi-Action Sequence
 
-**Lower Button - Long Press:** Turn off all lights in sequence
+**Lower Button - Long Press:** Turn off all lights in sequence. 
 In this case, the Button 4 LED can emulate *Zone Toggle* behavior (LED lit if *any* light is on) by creating a **Group** of lights and associating that Group to Button 4 using the *Lutron Sunnata Keypad LED Control* blueprint.
 
 ```yaml
