@@ -171,7 +171,7 @@ blueprint:
             action: {}
 
     lower_button_group:
-      name: "Lower Button Actions (for RRST-W3RL-XX and RRST-HN3RL-XX)"
+      name: "Lower Button Actions (for 3-button w/ Raise & Lower)"
       icon: mdi:arrow-down-bold-box
       collapsed: true
       input: 
@@ -201,7 +201,7 @@ blueprint:
             action: {}
 
     raise_button_group:
-      name: "Raise Button Actions (for RRST-W3RL-XX and RRST-HN3RL-XX)"
+      name: "Raise Button Actions (for 3-button w/ Raise & Lower)"
       icon: mdi:arrow-up-bold-box
       collapsed: true
       input: 
