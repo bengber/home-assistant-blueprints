@@ -171,7 +171,7 @@ blueprint:
             action: {}
 
     lower_button_group:
-      name: "Lower Button (down arrow) Actions"
+      name: "Lower Button Actions"
       icon: mdi:arrow-down-bold-box
       collapsed: true
       input: 
@@ -201,7 +201,7 @@ blueprint:
             action: {}
 
     raise_button_group:
-      name: "Raise Button (up arrow) Actions"
+      name: "Raise Button Actions"
       icon: mdi:arrow-up-bold-box
       collapsed: true
       input: 
