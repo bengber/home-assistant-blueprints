@@ -141,7 +141,7 @@ blueprint:
             action: {}
     
     button_4_group:
-      name: "Button 4 (Button Button) Actions"
+      name: "Button 4 (Bottom Button) Actions"
       icon: mdi:numeric-4-box
       collapsed: true
       input:
