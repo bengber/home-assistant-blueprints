@@ -27,8 +27,8 @@ blueprint:
     the button behavior needs to be set as ***Sinngle Action*** in the Lutron designer software. 
     (Using either ***Scene Toggle*** or ***Zone Toggle*** will prevent the button release events from being fired.)
   domain: automation
-  home_assistant:
-    min_version: 2024.6.0
+  homeassistant:
+    min_version: "2024.6.0"
   input:
     sunnata_keypad:
       name: Sunnata Keypad
