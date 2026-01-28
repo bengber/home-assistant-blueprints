@@ -28,7 +28,7 @@ blueprint:
     (Using either ***Scene Toggle*** or ***Zone Toggle*** will prevent the button release events from being fired.)
   domain: automation
   home_assistant:
-    nin_version: 2024.6.0
+    min_version: 2024.6.0
   input:
     sunnata_keypad:
       name: Sunnata Keypad
