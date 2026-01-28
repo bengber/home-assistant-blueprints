@@ -51,7 +51,7 @@ blueprint:
           multiple: false
     
     button_1_group:
-      name: "Button 1 (Top Button) Actions"
+      name: "Button 1 Actions"
       icon: mdi:numeric-1-box
       collapsed: true
       input:
@@ -111,13 +111,13 @@ blueprint:
             action: {}
     
     button_3_group:
-      name: "Button 3 Actions"
+      name: "Button 3 Actions (for 3 or 4 button keypads)"
       icon: mdi:numeric-3-box
       collapsed: true
       input:
         button_3_single_click:
           name: Single Click Action
-          description: Action to perform on single click of button 3 (for 3+ button keypads)
+          description: Action to perform on single click of button 3
           default: []
           selector:
             action: {}
@@ -141,13 +141,13 @@ blueprint:
             action: {}
     
     button_4_group:
-      name: "Button 4 (Bottom Button) Actions"
+      name: "Button 4 Actions (for 4 button keypads)"
       icon: mdi:numeric-4-box
       collapsed: true
       input:
         button_4_single_click:
           name: Single Click Action
-          description: Action to perform on single click of button 4 (for 4 button keypads)
+          description: Action to perform on single click of button 4
           default: []
           selector:
             action: {}
@@ -171,7 +171,7 @@ blueprint:
             action: {}
 
     lower_button_group:
-      name: "Lower Button Actions"
+      name: "Lower Button Actions (for RRST-W3RL-XX and RRST-HN3RL-XX)"
       icon: mdi:arrow-down-bold-box
       collapsed: true
       input: 
@@ -201,7 +201,7 @@ blueprint:
             action: {}
 
     raise_button_group:
-      name: "Raise Button Actions"
+      name: "Raise Button Actions (for RRST-W3RL-XX and RRST-HN3RL-XX)"
       icon: mdi:arrow-up-bold-box
       collapsed: true
       input: 
