@@ -124,19 +124,27 @@ Arms an alarm when the button is pressed, lighting the LEDS when the alarm is ar
 
 **Button 2 - Single Click:** Arm home with 30-second warning
 ```yaml
-- action: script.arm_alarm_after_thirty_seconds
+- action: script.turn_on
+  metadata: {}
+  target:
+    entity_id: script.arm_alarm_after_flashing_light_for_30_seconds
   data:
+    led_entity: button.entry_keypad_button_2
     arm_mode: arm_home
 ```
 
 **Button 2 - Double Click:** Arm away with 30-second warning
 ```yaml
-- action: script.arm_alarm_after_thirty_seconds
+- action: script.turn_on
+  metadata: {}
+  target:
+    entity_id: script.arm_alarm_after_flashing_light_for_30_seconds
   data:
+    led_entity: button.entry_keypad_button_2
     arm_mode: arm_away
 ```
 
-*(Note: Requires a separate `arm_alarm_after_thirty_seconds` script)*
+*(Note: Requires a separate `arm_alarm_after_flashing_light_for_30_seconds` script)*
 
 ### Example 3: Scene Control
 Uses a Stateful Scene switch to keep LED in sync. Also remmember to associate the switch with the Button 3 LED using the *Lutron Sunnata Keypad LED Control* blueprint.
