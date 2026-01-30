@@ -129,8 +129,9 @@ Arms an alarm when the button is pressed, lighting the LEDS when the alarm is ar
   target:
     entity_id: script.arm_alarm_after_flashing_light_for_30_seconds
   data:
-    led_entity: button.entry_keypad_button_2
-    arm_mode: arm_home
+    variables:
+      led_entity: switch.entry_keypad_button_2_led
+      arm_mode: arm_home
 ```
 
 **Button 2 - Double Click:** Arm away with 30-second warning
@@ -140,8 +141,9 @@ Arms an alarm when the button is pressed, lighting the LEDS when the alarm is ar
   target:
     entity_id: script.arm_alarm_after_flashing_light_for_30_seconds
   data:
-    led_entity: button.entry_keypad_button_2
-    arm_mode: arm_away
+    variables:
+      led_entity: switch.entry_keypad_button_2_led
+      arm_mode: arm_away
 ```
 
 *(Note: Requires a separate `arm_alarm_after_flashing_light_for_30_seconds` script)*
