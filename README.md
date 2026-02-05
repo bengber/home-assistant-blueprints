@@ -71,12 +71,13 @@ Each button (1-4, Lower, Raise) has its own collapsible group with four action t
 - **Single Click** - Fires immediately for a quick press (or after double-click timeout if double click is configured)
 - **Double Click** - Fires when the button is pressed twice quickly (leave empty to disable detection)
 - **Long Press** - Fires when the button is held down (leave empty to disable detection)
-- **Release After Long Press** - Fires when a long-pressed button is released
+- **Release After Long Press** - Fires when a long-pressed button is released. The special variable `long_press_duration` will be available for use in these actions. It is the number of milliseconds the button was held for.
 
 ### Advanced Settings
 
-- **Long Press Timeout** (default: 500ms) - How long to hold before triggering a long press
-- **Double Click Timeout** (default: 250ms) - Maximum time between clicks for double-click detection
+- **Long Press Timeout** (default: 500ms) - How long to hold (in milliseconds) before triggering a long press
+- **Double Click Timeout** (default: 250ms) - Maximum time (in milliseconds) between clicks for double-click detection
+- **Max Long Press Duration** (default: 60s) - A long press will automatically be considered release after this delay (in seconds). This is to protect against accidentally creating a permanent loops.
 
 ### Detection Logic
 
@@ -167,7 +168,9 @@ Uses a Stateful Scene switch to keep LED in sync. Also remmember to associate th
 
 ### Example 4: Multi-Action Sequence
 
-**Lower Button - Long Press:** Turn off all lights in sequence. 
+**Button 4 - Long Press:** Turn off all lights in sequence. 
+
+
 In this case, the Button 4 LED can emulate *Zone Toggle* behavior (LED lit if *any* light is on) by creating a **Group** of lights and associating that Group to Button 4 using the *Lutron Sunnata Keypad LED Control* blueprint.
 
 ```yaml
@@ -179,6 +182,29 @@ In this case, the Button 4 LED can emulate *Zone Toggle* behavior (LED lit if *a
 - action: light.turn_off
   target:
     area_id: kitchen
+```
+
+### Example 5: Using long press and release to start and stop a script
+In this example, we trigger a script asynchronously that will perform a recurring action as long as the button is held.
+When the button is released, the script will stop. We can do this by setting the script's **mode** to *restart* so it can
+be interrupted, or by using *script.turn_off*.
+
+**Raise Button - Long Press:** Start a script that will repeatedly execute a command until forcibly stopped
+
+```yaml
+- action: script.turn_on
+  metadata: {}
+  target:
+    entity_id: script.gradually_increase_brightness
+```
+
+**Release After Long Press** Stop the script
+
+```yaml
+- action: script.turn_off
+  metadata: {}
+  target:
+    entity_id: script.gradually_increase_brightness
 ```
 
 

@@ -75,7 +75,7 @@ blueprint:
             action: {}
         button_1_release:
           name: Release After Long Press Action
-          description: Action to perform when button 1 is released after a long press
+          description: Action to perform when button 1 is released after a long press. The special variable `long_press_duration` will bet set to the number of milliseconds the button was held for.
           default: []
           selector:
             action: {}
@@ -105,7 +105,7 @@ blueprint:
             action: {}
         button_2_release:
           name: Release After Long Press Action
-          description: Action to perform when button 2 is released after a long press
+          description: Action to perform when button 2 is released after a long press. The special variable `long_press_duration` will bet set to the number of milliseconds the button was held for.
           default: []
           selector:
             action: {}
@@ -135,7 +135,7 @@ blueprint:
             action: {}
         button_3_release:
           name: Release After Long Press Action
-          description: Action to perform when button 3 is released after a long press
+          description: Action to perform when button 3 is released after a long press. The special variable `long_press_duration` will bet set to the number of milliseconds the button was held for.
           default: []
           selector:
             action: {}
@@ -165,7 +165,7 @@ blueprint:
             action: {}
         button_4_release:
           name: Release After Long Press Action
-          description: Action to perform when button 4 is released after a long press
+          description: Action to perform when button 4 is released after a long pressThe special variable `long_press_duration` will bet set to the number of milliseconds the button was held for.
           default: []
           selector:
             action: {}
@@ -195,7 +195,7 @@ blueprint:
             action: {}
         button_lower_release:
           name: Release After Long Press Action
-          description: Action to perform when lower button is released after a long press
+          description: Action to perform when lower button is released after a long pressThe special variable `long_press_duration` will bet set to the number of milliseconds the button was held for.
           default: []
           selector:
             action: {}
@@ -225,7 +225,7 @@ blueprint:
             action: {}
         button_raise_release:
           name: Release After Long Press Action
-          description: Action to perform when raise button is released after a long press
+          description: Action to perform when raise button is released after a long pressThe special variable `long_press_duration` will bet set to the number of milliseconds the button was held for.
           default: []
           selector:
             action: {}
@@ -255,6 +255,16 @@ blueprint:
               max: 1000
               step: 50
               unit_of_measurement: "ms"
+        max_long_press_duration:
+          name: Maximum Long Press Duration
+          description: Maximum time (in seconds) a long press can be held for before it is automatically considered released
+          default: 60
+          selector:
+            number:
+              min: 1
+              max: 3600
+              step: 1
+              unit_of_measurement: "s"
 
 trigger_variables:
   sunnata_keypad_device: !input sunnata_keypad
@@ -268,12 +278,14 @@ triggers:
       leap_number: leap_{{ trigger.event.data.leap_button_number }}
       original_leap_button_number: "{{ trigger.event.data.leap_button_number }}"
       leap_trigger_type: "{{ trigger.event.data.action }}"
+      original_press_start_time: "{{ trigger.event.time_fired }}"
 
 conditions: []
 
 variables:
   long_press_timeout: !input long_press_timeout
   double_click_timeout: !input double_click_timeout
+  max_long_press_duration: !input max_long_press_duration
   double_click_actions:
     leap_1: !input button_1_double_click
     leap_2: !input button_2_double_click
@@ -288,6 +300,13 @@ variables:
     leap_4: !input button_4_long_press
     leap_18: !input button_lower_long_press
     leap_19: !input button_raise_long_press
+  long_click_release_actions:
+    leap_1: !input button_1_release
+    leap_2: !input button_2_release
+    leap_3: !input button_3_release
+    leap_4: !input button_4_release
+    leap_18: !input button_lower_release
+    leap_19: !input button_raise_release
 
 actions:
   - choose:
@@ -298,7 +317,8 @@ actions:
               {# If a double click or long click action is defined, check for release and followup events #}
               {{ leap_trigger_type == 'press' and 
                  (double_click_actions[leap_number]|length > 0 or 
-                  long_click_actions[leap_number]|length > 0) }}
+                  long_click_actions[leap_number]|length > 0 or
+                  long_click_release_actions[leap_number]|length > 0) }}
         sequence:
           # Wait for release to detect long press
           - wait_for_trigger:
@@ -318,6 +338,8 @@ actions:
                       {# No release detected, we're in a long press #}
                       {{ not wait.trigger }}
                 sequence:
+                  - variables:
+                      long_press_start_time: "{{ now() }}"
                   - choose:
                       - conditions: ["{{ leap_number == 'leap_1' }}"]
                         sequence: !input button_1_long_press
@@ -331,6 +353,30 @@ actions:
                         sequence: !input button_lower_long_press
                       - conditions: ["{{ leap_number == 'leap_19' }}"]
                         sequence: !input button_raise_long_press
+                  - wait_for_trigger:
+                      - trigger: event
+                        event_type: lutron_caseta_button_event
+                        event_data:
+                          device_id: "{{ sunnata_keypad_device }}"
+                          leap_button_number: "{{ original_leap_button_number }}"
+                          action: release
+                    timeout:
+                      seconds: "{{ max_long_press_duration }}"
+                  - variables:
+                      long_press_duration: "{{ (as_timestamp(now()) - as_timestamp(long_press_start_time)) * 1000 }}"
+                  - choose:
+                      - conditions: ["{{ leap_number == 'leap_1' }}"]
+                        sequence: !input button_1_release
+                      - conditions: ["{{ leap_number == 'leap_2' }}"]
+                        sequence: !input button_2_release
+                      - conditions: ["{{ leap_number == 'leap_3' }}"]
+                        sequence: !input button_3_release
+                      - conditions: ["{{ leap_number == 'leap_4' }}"]
+                        sequence: !input button_4_release
+                      - conditions: ["{{ leap_number == 'leap_18' }}"]
+                        sequence: !input button_lower_release
+                      - conditions: ["{{ leap_number == 'leap_19' }}"]
+                        sequence: !input button_raise_release
               # Not a long press, check for double-click
               - conditions:
                   - condition: template
@@ -388,6 +434,8 @@ actions:
                                   {# We didn't release the second press in time. Let's treat that as a long click. #}
                                   {{ not wait.trigger }}
                             sequence:
+                              - variables:
+                                  long_press_start_time: "{{ now() }}"                              
                               - choose:
                                   - conditions: ["{{ leap_number == 'leap_1' }}"]
                                     sequence: !input button_1_long_press
@@ -401,6 +449,31 @@ actions:
                                     sequence: !input button_lower_long_press
                                   - conditions: ["{{ leap_number == 'leap_19' }}"]
                                     sequence: !input button_raise_long_press
+                                  - wait_for_trigger:
+                                      - trigger: event
+                                        event_type: lutron_caseta_button_event
+                                        event_data:
+                                          device_id: "{{ sunnata_keypad_device }}"
+                                          leap_button_number: "{{ original_leap_button_number }}"
+                                          action: release
+                                    timeout:
+                                      seconds: "{{ max_long_press_duration }}"
+                                  - variables:
+                                      long_press_duration: "{{ (as_timestamp(now()) - as_timestamp(long_press_start_time)) * 1000 }}"
+                                  - choose:
+                                      - conditions: ["{{ leap_number == 'leap_1' }}"]
+                                        sequence: !input button_1_release
+                                      - conditions: ["{{ leap_number == 'leap_2' }}"]
+                                        sequence: !input button_2_release
+                                      - conditions: ["{{ leap_number == 'leap_3' }}"]
+                                        sequence: !input button_3_release
+                                      - conditions: ["{{ leap_number == 'leap_4' }}"]
+                                        sequence: !input button_4_release
+                                      - conditions: ["{{ leap_number == 'leap_18' }}"]
+                                        sequence: !input button_lower_release
+                                      - conditions: ["{{ leap_number == 'leap_19' }}"]
+                                        sequence: !input button_raise_release
+
                         # Double click confirmed
                         default:
                           - choose:
