@@ -165,7 +165,7 @@ blueprint:
             action: {}
         button_4_release:
           name: Release After Long Press Action
-          description: Action to perform when button 4 is released after a long pressThe special variable `long_press_duration` will bet set to the number of milliseconds the button was held for.
+          description: Action to perform when button 4 is released after a long press. The special variable `long_press_duration` will bet set to the number of milliseconds the button was held for.
           default: []
           selector:
             action: {}
@@ -195,7 +195,7 @@ blueprint:
             action: {}
         button_lower_release:
           name: Release After Long Press Action
-          description: Action to perform when lower button is released after a long pressThe special variable `long_press_duration` will bet set to the number of milliseconds the button was held for.
+          description: Action to perform when lower button is released after a long press. The special variable `long_press_duration` will bet set to the number of milliseconds the button was held for.
           default: []
           selector:
             action: {}
@@ -341,43 +341,45 @@ actions:
                 sequence:
                   - variables:
                       long_press_start_time: "{{ now() }}"
-                  - choose:
-                      - conditions: ["{{ leap_number == 'leap_1' }}"]
-                        sequence: !input button_1_long_press
-                      - conditions: ["{{ leap_number == 'leap_2' }}"]
-                        sequence: !input button_2_long_press
-                      - conditions: ["{{ leap_number == 'leap_3' }}"]
-                        sequence: !input button_3_long_press
-                      - conditions: ["{{ leap_number == 'leap_4' }}"]
-                        sequence: !input button_4_long_press
-                      - conditions: ["{{ leap_number == 'leap_18' }}"]
-                        sequence: !input button_lower_long_press
-                      - conditions: ["{{ leap_number == 'leap_19' }}"]
-                        sequence: !input button_raise_long_press
-                  - wait_for_trigger:
-                      - trigger: event
-                        event_type: lutron_caseta_button_event
-                        event_data:
-                          device_id: "{{ sunnata_keypad_device }}"
-                          leap_button_number: "{{ original_leap_button_number }}"
-                          action: release
-                    timeout:
-                      seconds: "{{ max_long_press_duration }}"
-                  - variables:
-                      long_press_duration: "{{ (as_timestamp(now()) - as_timestamp(long_press_start_time)) * 1000 }}"
-                  - choose:
-                      - conditions: ["{{ leap_number == 'leap_1' }}"]
-                        sequence: !input button_1_release
-                      - conditions: ["{{ leap_number == 'leap_2' }}"]
-                        sequence: !input button_2_release
-                      - conditions: ["{{ leap_number == 'leap_3' }}"]
-                        sequence: !input button_3_release
-                      - conditions: ["{{ leap_number == 'leap_4' }}"]
-                        sequence: !input button_4_release
-                      - conditions: ["{{ leap_number == 'leap_18' }}"]
-                        sequence: !input button_lower_release
-                      - conditions: ["{{ leap_number == 'leap_19' }}"]
-                        sequence: !input button_raise_release
+                  - parallel:
+                      - choose:
+                          - conditions: ["{{ leap_number == 'leap_1' }}"]
+                            sequence: !input button_1_long_press
+                          - conditions: ["{{ leap_number == 'leap_2' }}"]
+                            sequence: !input button_2_long_press
+                          - conditions: ["{{ leap_number == 'leap_3' }}"]
+                            sequence: !input button_3_long_press
+                          - conditions: ["{{ leap_number == 'leap_4' }}"]
+                            sequence: !input button_4_long_press
+                          - conditions: ["{{ leap_number == 'leap_18' }}"]
+                            sequence: !input button_lower_long_press
+                          - conditions: ["{{ leap_number == 'leap_19' }}"]
+                            sequence: !input button_raise_long_press
+                      - sequence:
+                          - wait_for_trigger:
+                              - trigger: event
+                                event_type: lutron_caseta_button_event
+                                event_data:
+                                  device_id: "{{ sunnata_keypad_device }}"
+                                  leap_button_number: "{{ original_leap_button_number }}"
+                                  action: release
+                            timeout:
+                              seconds: "{{ max_long_press_duration }}"
+                          - variables:
+                              long_press_duration: "{{ (as_timestamp(now()) - as_timestamp(long_press_start_time)) * 1000 }}"
+                          - choose:
+                              - conditions: ["{{ leap_number == 'leap_1' }}"]
+                                sequence: !input button_1_release
+                              - conditions: ["{{ leap_number == 'leap_2' }}"]
+                                sequence: !input button_2_release
+                              - conditions: ["{{ leap_number == 'leap_3' }}"]
+                                sequence: !input button_3_release
+                              - conditions: ["{{ leap_number == 'leap_4' }}"]
+                                sequence: !input button_4_release
+                              - conditions: ["{{ leap_number == 'leap_18' }}"]
+                                sequence: !input button_lower_release
+                              - conditions: ["{{ leap_number == 'leap_19' }}"]
+                                sequence: !input button_raise_release
               # Not a long press, check for double-click
               - conditions:
                   - condition: template
@@ -436,44 +438,46 @@ actions:
                                   {{ not wait.trigger }}
                             sequence:
                               - variables:
-                                  long_press_start_time: "{{ now() }}"                              
-                              - choose:
-                                  - conditions: ["{{ leap_number == 'leap_1' }}"]
-                                    sequence: !input button_1_long_press
-                                  - conditions: ["{{ leap_number == 'leap_2' }}"]
-                                    sequence: !input button_2_long_press
-                                  - conditions: ["{{ leap_number == 'leap_3' }}"]
-                                    sequence: !input button_3_long_press
-                                  - conditions: ["{{ leap_number == 'leap_4' }}"]
-                                    sequence: !input button_4_long_press
-                                  - conditions: ["{{ leap_number == 'leap_18' }}"]
-                                    sequence: !input button_lower_long_press
-                                  - conditions: ["{{ leap_number == 'leap_19' }}"]
-                                    sequence: !input button_raise_long_press
-                                  - wait_for_trigger:
-                                      - trigger: event
-                                        event_type: lutron_caseta_button_event
-                                        event_data:
-                                          device_id: "{{ sunnata_keypad_device }}"
-                                          leap_button_number: "{{ original_leap_button_number }}"
-                                          action: release
-                                    timeout:
-                                      seconds: "{{ max_long_press_duration }}"
-                                  - variables:
-                                      long_press_duration: "{{ (as_timestamp(now()) - as_timestamp(long_press_start_time)) * 1000 }}"
+                                  long_press_start_time: "{{ now() }}"
+                              - parallel:                        
                                   - choose:
                                       - conditions: ["{{ leap_number == 'leap_1' }}"]
-                                        sequence: !input button_1_release
+                                        sequence: !input button_1_long_press
                                       - conditions: ["{{ leap_number == 'leap_2' }}"]
-                                        sequence: !input button_2_release
+                                        sequence: !input button_2_long_press
                                       - conditions: ["{{ leap_number == 'leap_3' }}"]
-                                        sequence: !input button_3_release
+                                        sequence: !input button_3_long_press
                                       - conditions: ["{{ leap_number == 'leap_4' }}"]
-                                        sequence: !input button_4_release
+                                        sequence: !input button_4_long_press
                                       - conditions: ["{{ leap_number == 'leap_18' }}"]
-                                        sequence: !input button_lower_release
+                                        sequence: !input button_lower_long_press
                                       - conditions: ["{{ leap_number == 'leap_19' }}"]
-                                        sequence: !input button_raise_release
+                                        sequence: !input button_raise_long_press
+                                  - sequence:
+                                      - wait_for_trigger:
+                                          - trigger: event
+                                            event_type: lutron_caseta_button_event
+                                            event_data:
+                                              device_id: "{{ sunnata_keypad_device }}"
+                                              leap_button_number: "{{ original_leap_button_number }}"
+                                              action: release
+                                        timeout:
+                                          seconds: "{{ max_long_press_duration }}"
+                                      - variables:
+                                          long_press_duration: "{{ (as_timestamp(now()) - as_timestamp(long_press_start_time)) * 1000 }}"
+                                      - choose:
+                                          - conditions: ["{{ leap_number == 'leap_1' }}"]
+                                            sequence: !input button_1_release
+                                          - conditions: ["{{ leap_number == 'leap_2' }}"]
+                                            sequence: !input button_2_release
+                                          - conditions: ["{{ leap_number == 'leap_3' }}"]
+                                            sequence: !input button_3_release
+                                          - conditions: ["{{ leap_number == 'leap_4' }}"]
+                                            sequence: !input button_4_release
+                                          - conditions: ["{{ leap_number == 'leap_18' }}"]
+                                            sequence: !input button_lower_release
+                                          - conditions: ["{{ leap_number == 'leap_19' }}"]
+                                            sequence: !input button_raise_release
 
                         # Double click confirmed
                         default:
