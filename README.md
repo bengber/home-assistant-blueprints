@@ -207,6 +207,28 @@ be interrupted, or by using *script.turn_off*.
     entity_id: script.gradually_increase_brightness
 ```
 
+### Example 6: Different actions based on how long a long press is
+
+**Lower Button - Long Press:** (Not used.)
+
+**Release After Long Press** If the button was pressed more than 5 secondfs
+turn off the whole house. Otherwise, turn off the room.
+
+```yaml
+- if:
+    - conditions: "{{ long_press_duration >= 5000 }}"
+        entity_id: group.all_family_members # Replace with a group of people/device trackers
+        state: "home"
+  then:
+    - action: script.turn_on
+      target:
+        entity_id: script.turn_off_whole_house
+  else:
+    - action: script.turn_on
+      target:
+        entity_id: script.turn_off_whole_house
+```
+
 
 ## Troubleshooting
 
