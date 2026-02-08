@@ -1,5 +1,5 @@
-#  lutron-sunnata-keypad-click-long-click-double-click.yaml- handle click, long press/release, and double-click events from a Lutron Sunnata keypad
-#  Copyright 2026 Benjamin ENgber
+#  lutron-sunnata-keypad-click-long-click-double-click.yaml - handle click, long press/release, and double-click events from a Lutron Sunnata keypad
+#  Copyright 2026 Benjamin Engber
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -525,17 +525,6 @@ actions:
             - conditions: ["{{ leap_number == 'leap_18' }}"]
               sequence: !input button_lower_single_click
             - conditions: ["{{ leap_number == 'leap_19' }}"]
-              sequence: !input button_raise_single_click
-        # Now let's try to absorb a release event, so it doesn't show up as a long-press release if we invoiked something asynchronously
-        - wait_for_trigger:
-            - trigger: event
-              event_type: lutron_caseta_button_event
-              event_data:
-                device_id: "{{ sunnata_keypad_device }}"
-                leap_button_number: "{{ original_leap_button_number }}"
-                action: release
-          timeout:
-            milliseconds: "{{ long_press_timeout }}"      
-
+              sequence: !input button_raise_single_click  
 
 mode: single
