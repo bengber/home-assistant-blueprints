@@ -216,9 +216,8 @@ turn off the whole house. Otherwise, turn off the room.
 
 ```yaml
 - if:
-    - conditions: "{{ long_press_duration >= 5000 }}"
-        entity_id: group.all_family_members # Replace with a group of people/device trackers
-        state: "home"
+    - condition: template
+      value: "{{ long_press_duration >= 5000 }}"
   then:
     - action: script.turn_on
       target:
@@ -226,7 +225,7 @@ turn off the whole house. Otherwise, turn off the room.
   else:
     - action: script.turn_on
       target:
-        entity_id: script.turn_off_whole_house
+        entity_id: script.turn_off_room
 ```
 
 

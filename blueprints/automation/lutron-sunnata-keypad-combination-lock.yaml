@@ -1,5 +1,6 @@
-#  lutron-sunnata-keypad-combination_lock.yaml - handle click, long press/release,
-#  and double-click events from a Lutron Sunnata keypad
+#  lutron-sunnata-keypad-combination_lock.yaml - Trigger an action when a 
+#      specific sequence of button clicks, double clicks, and long presses 
+#      is detected on a Lutron Sunnata Keypad
 #  Copyright 2026 Benjamin Engber
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,7 +60,6 @@ blueprint:
         - button_1_single_click
         - button_1_double_click
         - button_1_long_press
-        - button_1_release
         - button_raise_single_click
         - button_raise_double_click (etc.)
       selector:
@@ -114,18 +114,6 @@ blueprint:
               max: 1000
               step: 50
               unit_of_measurement: "ms"
-        max_long_press_duration:
-          name: Maximum Long Press Duration
-          description: >-
-            Maximum time (in seconds) a long press can be held for before it is
-            automatically considered released
-          default: 60
-          selector:
-            number:
-              min: 1
-              max: 3600
-              step: 1
-              unit_of_measurement: "s"
         next_in_sequence_timeout:
           name: Next-In-Sequence Timeout
           description: >-
@@ -159,7 +147,6 @@ conditions: []
 variables:
   long_press_timeout: !input long_press_timeout
   double_click_timeout: !input double_click_timeout
-  max_long_press_duration: !input max_long_press_duration
   passcode_sequence: !input passcode_sequence
   # Normalize and validate the configured passcode sequence
   normalized_passcode_sequence: '{{ passcode_sequence | regex_replace("\\s+", "") }}'
@@ -173,27 +160,21 @@ variables:
         'button_1_single_click',
         'button_1_double_click',
         'button_1_long_press',
-        'button_1_release',
         'button_2_single_click',
         'button_2_double_click',
         'button_2_long_press',
-        'button_2_release',
         'button_3_single_click',
         'button_3_double_click',
         'button_3_long_press',
-        'button_3_release',
         'button_4_single_click',
         'button_4_double_click',
         'button_4_long_press',
-        'button_4_release',
         'button_lower_single_click',
         'button_lower_double_click',
         'button_lower_long_press',
-        'button_lower_release',
         'button_raise_single_click',
         'button_raise_double_click',
         'button_raise_long_press',
-        'button_raise_release'
       ] %}
         {{ p }}
         {% break %}
@@ -224,9 +205,8 @@ actions:
                      treat as fresh start #}
                   {{ (states(passcode_progress) | default('') != '') and
                      (states(last_press_time) is not none) and
-                     (states(last_press_time).state != '') and
-                     (as_timestamp(states(last_press_time).state) > 0) and
-                     ((as_timestamp(now()) - as_timestamp(states(last_press_time).state)) >
+                     (as_timestamp(states(last_press_time)) > 100000) and
+                     ((as_timestamp(now()) - as_timestamp(states(last_press_time))) >
                       next_in_sequence_timeout) }}
             then:
               # Timeout has expired since last button press, clear progress and start again
@@ -239,7 +219,7 @@ actions:
                 target:
                   entity_id: !input last_press_time
                 data:
-                  datetime: "1970-01-01 00:00:00"
+                  datetime: "1970-01-01 00:00:00+0000"
               - service: persistent_notification.create
                 data:
                   title: "Keypad passcode timeout"
@@ -399,7 +379,7 @@ actions:
                     target:
                       entity_id: !input last_press_time
                     data:
-                      datetime: "1970-01-01 00:00:00"
+                      datetime: "1970-01-01 00:00:00+0000"
               - conditions:
                   - condition: template
                     value_template: >-
@@ -417,7 +397,7 @@ actions:
                     target:
                       entity_id: !input last_press_time
                     data:
-                      datetime: "1970-01-01 00:00:00"
+                      datetime: "1970-01-01 00:00:00+0000"
                   - service: persistent_notification.create
                     data:
                       title: "Keypad passcode matched"
