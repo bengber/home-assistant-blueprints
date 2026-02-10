@@ -1,5 +1,5 @@
-#  lutron-sunnata-keypad-combination_lock.yaml - Trigger an action when a 
-#      specific sequence of button clicks, double clicks, and long presses 
+#  lutron-sunnata-keypad-combination_lock.yaml - Trigger an action when a
+#      specific sequence of button clicks, double clicks, and long presses
 #      is detected on a Lutron Sunnata Keypad
 #  Copyright 2026 Benjamin Engber
 #
@@ -96,7 +96,8 @@ blueprint:
       input:
         long_press_timeout:
           name: Long Press Timeout
-          description: How long (in milliseconds) before a press becomes a long press
+          description: >-
+            How long (in milliseconds) before a press becomes a long press
           default: 500
           selector:
             number:
@@ -106,7 +107,9 @@ blueprint:
               unit_of_measurement: "ms"
         double_click_timeout:
           name: Double Click Timeout
-          description: Maximum time (in milliseconds) between clicks for double-click detection
+          description: >-
+            Maximum time (in milliseconds) between clicks for double-click
+            detection
           default: 250
           selector:
             number:
@@ -118,8 +121,9 @@ blueprint:
           name: Next-In-Sequence Timeout
           description: >-
             Time (in seconds) allowed between sequence steps before the
-            passcode resets.
-          default: 2
+            passcode resets and the user needs to start over. Be sure to
+            keep this longer than your `long_press_timeout`.
+          default: 3
           selector:
             number:
               min: 1
@@ -129,9 +133,9 @@ blueprint:
         debug_mode:
           name: Debug Mode
           description: >-
-            When enabled, additional notifications will be generated to show the
-            current passcode progress and when timeouts occur. Disable for normal
-            use.
+            When enabled, additional notifications will be generated to show
+            the current passcode progress and when timeouts occur. Disable
+            for normal use.
           default: false
           selector:
             boolean: {}
@@ -159,11 +163,13 @@ variables:
   passcode_sequence: !input passcode_sequence
   debug_mode: !input debug_mode
   # Normalize and validate the configured passcode sequence
-  normalized_passcode_sequence: '{{ passcode_sequence | regex_replace("\\s+", "") }}'
+  normalized_passcode_sequence: >-
+    {{ passcode_sequence | regex_replace("\\s+", "") }}
   # Check for any invalid tokens in the passcode sequence
   invalid_token: >-
     {% set parts = (
-      normalized_passcode_sequence.split(',') if normalized_passcode_sequence != '' else []
+      normalized_passcode_sequence.split(',')
+      if normalized_passcode_sequence != '' else []
     ) %}
     {% for p in parts %}
       {% if p not in [
@@ -203,7 +209,8 @@ actions:
           - action: persistent_notification.create
             data:
               title: "Passcode configuration error"
-              message: "Invalid action in passcode_sequence: {{ invalid_token }}"
+              message: >-
+                Invalid action in passcode_sequence: {{ invalid_token }}
       - conditions:
           - condition: template
             value_template: "{{ invalid_token == '' }}"
@@ -211,15 +218,17 @@ actions:
           - if:
               - condition: template
                 value_template: >-
-                  {# Only perform the timeout check if there is existing progress; otherwise
-                     treat as fresh start #}
+                  {# Only perform the timeout check if there is existing
+                     progress; otherwise treat as fresh start #}
                   {{ (states(passcode_progress) | default('') != '') and
                      (states(last_press_time) is not none) and
                      (as_timestamp(states(last_press_time)) > 100000) and
-                     ((as_timestamp(now()) - as_timestamp(states(last_press_time))) >
+                     ((as_timestamp(now()) -
+                       as_timestamp(states(last_press_time))) >
                       next_in_sequence_timeout) }}
             then:
-              # Timeout has expired since last button press, clear progress and start again
+              # Timeout has expired since last button press, clear
+              # progress and start again
               - action: input_text.set_value
                 target:
                   entity_id: !input passcode_progress
@@ -233,7 +242,8 @@ actions:
               - action: persistent_notification.create
                 data:
                   title: "Keypad passcode timeout"
-                  message: "Passcode sequence timed out — progress cleared."
+                  message: >-
+                    Passcode sequence timed out — progress cleared.
                 enabled: "{{ debug_mode }}"
             else:
               # Wait for release to detect long press
@@ -250,7 +260,7 @@ actions:
                   # Long press detected (timeout expired)
                   - conditions:
                       - condition: template
-                        value_template: >- 
+                        value_template: >-
                           {# No release detected, we're in a long press #}
                           {{ not wait.trigger }}
                     sequence:
@@ -259,8 +269,10 @@ actions:
                           entity_id: !input passcode_progress
                         data:
                           value: >-
-                            {% set current = states(passcode_progress) | default('') %}
-                            {{ current ~ (',' if current | length > 0 else '') ~ (
+                            {% set current = states(passcode_progress)
+                               | default('') %}
+                            {{ current ~
+                               (',' if current | length > 0 else '') ~ (
                                {
                                  'leap_1':'button_1_long_press',
                                  'leap_2':'button_2_long_press',
@@ -282,7 +294,8 @@ actions:
                         event_type: lutron_caseta_button_event
                         event_data:
                           device_id: "{{ sunnata_keypad_device }}"
-                          leap_button_number: "{{ original_leap_button_number }}"
+                          leap_button_number: >-
+                            {{ original_leap_button_number }}
                           action: press
                     timeout:
                       milliseconds: "{{ double_click_timeout }}"
@@ -291,7 +304,8 @@ actions:
                       - conditions:
                           - condition: template
                             value_template: >-
-                              {# We didn't detect a second press. It's a single click. #}
+                              {# We didn't detect a second press.
+                                 It's a single click. #}
                               {{ not wait.trigger }}
                         sequence:
                           - action: input_text.set_value
@@ -299,9 +313,10 @@ actions:
                               entity_id: !input passcode_progress
                             data:
                               value: >-
-                                {% set current = states(passcode_progress) |
-                                   default('') %}
-                                {{ current ~ (',' if current | length > 0 else '') ~ (
+                                {% set current = states(passcode_progress)
+                                   | default('') %}
+                                {{ current ~
+                                   (',' if current | length > 0 else '') ~ (
                                    {
                                      'leap_1':'button_1_single_click',
                                      'leap_2':'button_2_single_click',
@@ -317,7 +332,8 @@ actions:
                             event_type: lutron_caseta_button_event
                             event_data:
                               device_id: "{{ sunnata_keypad_device }}"
-                              leap_button_number: "{{ original_leap_button_number }}"
+                              leap_button_number: >-
+                                {{ original_leap_button_number }}
                               action: release
                         timeout:
                           milliseconds: "{{ long_press_timeout }}"
@@ -326,7 +342,9 @@ actions:
                           - conditions:
                               - condition: template
                                 value_template: >-
-                                  {# We didn't release the second press in time. Let's treat that as a long click. #}
+                                  {# We didn't release the second press
+                                     in time. Let's treat that as a long
+                                     click. #}
                                   {{ not wait.trigger }}
                             sequence:
                               - action: input_text.set_value
@@ -334,8 +352,12 @@ actions:
                                   entity_id: !input passcode_progress
                                 data:
                                   value: >-
-                                    {% set current = states(passcode_progress) | default('') %}
-                                    {{ current ~ (',' if current | length > 0 else '') ~ (
+                                    {% set current =
+                                       states(passcode_progress)
+                                       | default('') %}
+                                    {{ current ~
+                                       (',' if current | length > 0
+                                       else '') ~ (
                                        {
                                          'leap_1':'button_1_long_press',
                                          'leap_2':'button_2_long_press',
@@ -351,8 +373,10 @@ actions:
                               entity_id: !input passcode_progress
                             data:
                               value: >-
-                                {% set current = states(passcode_progress) | default('') %}
-                                {{ current ~ (',' if current | length > 0 else '') ~ (
+                                {% set current = states(passcode_progress)
+                                   | default('') %}
+                                {{ current ~
+                                   (',' if current | length > 0 else '') ~ (
                                    {
                                      'leap_1':'button_1_double_click',
                                      'leap_2':'button_2_double_click',
@@ -372,15 +396,18 @@ actions:
               - conditions:
                   - condition: template
                     value_template: >-
-                      {{ (states(passcode_progress) | default('')) != '' and
-                         not normalized_passcode_sequence.startswith(states(passcode_progress)) }}
+                      {{ (states(passcode_progress) | default('')) != ''
+                         and not normalized_passcode_sequence.startswith(
+                         states(passcode_progress)) }}
                 sequence:
                   - action: persistent_notification.create
                     data:
                       title: "Keypad passcode progress reset"
                       message: >-
-                        Passcode progress "{{ states(passcode_progress) | default('') }}"
-                        does not match the start of the configured passcode sequence and has been reset.
+                        Passcode progress
+                        "{{ states(passcode_progress) | default('') }}"
+                        does not match the start of the configured
+                        passcode sequence and has been reset.
                     enabled: "{{ debug_mode }}"
                   - action: input_text.set_value
                     target:
@@ -419,7 +446,9 @@ actions:
           - action: persistent_notification.create
             data:
               title: "Keypad passcode progress"
-              message: "Current passcode_progress: {{ states(passcode_progress) | default('') }}"
+              message: >-
+                Current passcode_progress:
+                {{ states(passcode_progress) | default('') }}
             enabled: "{{ debug_mode }}"
 
 mode: single
