@@ -238,6 +238,10 @@ If only single clicks are configured, the response should be immediate. If it fe
 2. Remove any empty/placeholder actions from double-click and long-press fields
 
 
+## Related Blueprints
+
+See the [Lutron Sunnata Keypad Combination Lock blueprint](README-combination-lock.md) for the ability to use the keypad as a combination lock that triggers an event after a sequence of actions.
+
 ## Contributing
 
 Found a bug or have a feature request? Please open an issue on GitHub!

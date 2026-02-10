@@ -118,8 +118,9 @@ blueprint:
           name: Next-In-Sequence Timeout
           description: >-
             Time (in seconds) allowed between sequence steps before the
-            passcode resets.
-          default: 2
+            passcode resets and the user needs to start over. Be sure to 
+            keep this longer than your `long_press_timeout`.
+          default: 3
           selector:
             number:
               min: 1
