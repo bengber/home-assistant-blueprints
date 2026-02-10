@@ -126,6 +126,15 @@ blueprint:
               max: 10
               step: 1
               unit_of_measurement: "s"
+        debug_mode:
+          name: Debug Mode
+          description: >-
+            When enabled, additional notifications will be generated to show the
+            current passcode progress and when timeouts occur. Disable for normal
+            use.
+          default: false
+          selector:
+            boolean: {}
 
 trigger_variables:
   sunnata_keypad_device: !input sunnata_keypad
@@ -148,6 +157,7 @@ variables:
   long_press_timeout: !input long_press_timeout
   double_click_timeout: !input double_click_timeout
   passcode_sequence: !input passcode_sequence
+  debug_mode: !input debug_mode
   # Normalize and validate the configured passcode sequence
   normalized_passcode_sequence: '{{ passcode_sequence | regex_replace("\\s+", "") }}'
   # Check for any invalid tokens in the passcode sequence
@@ -190,7 +200,7 @@ actions:
           - condition: template
             value_template: "{{ invalid_token != '' }}"
         sequence:
-          - service: persistent_notification.create
+          - action: persistent_notification.create
             data:
               title: "Passcode configuration error"
               message: "Invalid action in passcode_sequence: {{ invalid_token }}"
@@ -210,20 +220,21 @@ actions:
                       next_in_sequence_timeout) }}
             then:
               # Timeout has expired since last button press, clear progress and start again
-              - service: input_text.set_value
+              - action: input_text.set_value
                 target:
                   entity_id: !input passcode_progress
                 data:
                   value: ""
-              - service: input_datetime.set_datetime
+              - action: input_datetime.set_datetime
                 target:
                   entity_id: !input last_press_time
                 data:
                   datetime: "1970-01-01 00:00:00+0000"
-              - service: persistent_notification.create
+              - action: persistent_notification.create
                 data:
                   title: "Keypad passcode timeout"
                   message: "Passcode sequence timed out — progress cleared."
+                enabled: "{{ debug_mode }}"
             else:
               # Wait for release to detect long press
               - wait_for_trigger:
@@ -243,7 +254,7 @@ actions:
                           {# No release detected, we're in a long press #}
                           {{ not wait.trigger }}
                     sequence:
-                      - service: input_text.set_value
+                      - action: input_text.set_value
                         target:
                           entity_id: !input passcode_progress
                         data:
@@ -258,7 +269,7 @@ actions:
                                  'leap_18':'button_lower_long_press',
                                  'leap_19':'button_raise_long_press'
                                }[leap_number]) }}
-                      - service: input_datetime.set_datetime
+                      - action: input_datetime.set_datetime
                         target:
                           entity_id: !input last_press_time
                         data:
@@ -283,7 +294,7 @@ actions:
                               {# We didn't detect a second press. It's a single click. #}
                               {{ not wait.trigger }}
                         sequence:
-                          - service: input_text.set_value
+                          - action: input_text.set_value
                             target:
                               entity_id: !input passcode_progress
                             data:
@@ -318,7 +329,7 @@ actions:
                                   {# We didn't release the second press in time. Let's treat that as a long click. #}
                                   {{ not wait.trigger }}
                             sequence:
-                              - service: input_text.set_value
+                              - action: input_text.set_value
                                 target:
                                   entity_id: !input passcode_progress
                                 data:
@@ -335,7 +346,7 @@ actions:
                                        }[leap_number]) }}
                         # Double click confirmed
                         default:
-                          - service: input_text.set_value
+                          - action: input_text.set_value
                             target:
                               entity_id: !input passcode_progress
                             data:
@@ -351,7 +362,7 @@ actions:
                                      'leap_19':'button_raise_double_click'
                                    }[leap_number]) }}
 
-          - service: input_datetime.set_datetime
+          - action: input_datetime.set_datetime
             target:
               entity_id: !input last_press_time
             data:
@@ -364,18 +375,19 @@ actions:
                       {{ (states(passcode_progress) | default('')) != '' and
                          not normalized_passcode_sequence.startswith(states(passcode_progress)) }}
                 sequence:
-                  - service: persistent_notification.create
+                  - action: persistent_notification.create
                     data:
                       title: "Keypad passcode progress reset"
                       message: >-
                         Passcode progress "{{ states(passcode_progress) | default('') }}"
                         does not match the start of the configured passcode sequence and has been reset.
-                  - service: input_text.set_value
+                    enabled: "{{ debug_mode }}"
+                  - action: input_text.set_value
                     target:
                       entity_id: !input passcode_progress
                     data:
                       value: ""
-                  - service: input_datetime.set_datetime
+                  - action: input_datetime.set_datetime
                     target:
                       entity_id: !input last_press_time
                     data:
@@ -388,24 +400,26 @@ actions:
                          normalized_passcode_sequence }}
                 sequence:
                   - sequence: !input passcode_matched_action
-                  - service: input_text.set_value
+                  - action: input_text.set_value
                     target:
                       entity_id: !input passcode_progress
                     data:
                       value: ""
-                  - service: input_datetime.set_datetime
+                  - action: input_datetime.set_datetime
                     target:
                       entity_id: !input last_press_time
                     data:
                       datetime: "1970-01-01 00:00:00+0000"
-                  - service: persistent_notification.create
+                  - action: persistent_notification.create
                     data:
                       title: "Keypad passcode matched"
                       message: "Passcode sequence matched and action executed."
+                    enabled: "{{ debug_mode }}"
 
-          - service: persistent_notification.create
+          - action: persistent_notification.create
             data:
               title: "Keypad passcode progress"
               message: "Current passcode_progress: {{ states(passcode_progress) | default('') }}"
+            enabled: "{{ debug_mode }}"
 
 mode: single
