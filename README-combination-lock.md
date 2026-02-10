@@ -16,7 +16,7 @@ The **Lutron Sunnata Keypad Combination Lock** blueprint monitors button events 
 | -------- |
 | [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https://github.com/bengber/home-assistant-lutron-sunnata-blueprints/blob/main/blueprints/automation/lutron-sunnata-keypad-combination-lock.yaml) |
 
-### Important:
+### Important
 
 Button release events are only fired when the button is configured as ***Single Action*** in the Lutron designer software. This means the combination lock will not work correctly for buttons configured as ***Scene Toggle*** or ***Zone Toggle***.
 
