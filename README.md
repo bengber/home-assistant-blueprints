@@ -49,7 +49,7 @@ Button release events are only fired when the button is configured as ***Single 
 
 Click the badge above or use this link in Home Assistant:
 
-```
+```text
 Settings → Automations & Scenes → Blueprints → Import Blueprint
 ```
 
@@ -95,6 +95,7 @@ The blueprint intelligently handles button press detection:
 Use a single button for on/dim/off behavior in a light. Also remmember to associate the light with the Button 1 LED using the *Lutron Sunnata Keypad LED Control* blueprint.
 
 **Button 1 - Single Click:** Turn on at 50% brightness
+
 ```yaml
 - action: light.turn_on
   target:
@@ -104,6 +105,7 @@ Use a single button for on/dim/off behavior in a light. Also remmember to associ
 ```
 
 **Button 1 - Double Click:** Turn on at 100% brightness
+
 ```yaml
 - action: light.turn_on
   target:
@@ -113,6 +115,7 @@ Use a single button for on/dim/off behavior in a light. Also remmember to associ
 ```
 
 **Button 1 - Long Press:** Turn off
+
 ```yaml
 - action: light.turn_off
   target:
@@ -120,9 +123,11 @@ Use a single button for on/dim/off behavior in a light. Also remmember to associ
 ```
 
 ### Example 2: Alarm Control with LED Warning
+
 Arms an alarm when the button is pressed, lighting the LEDS when the alarm is armed. Also remmember to associate the alarm_control_panel with the Button 2 LED using the *Lutron Sunnata Keypad LED Control* blueprint.
 
 **Button 2 - Single Click:** Arm home with 30-second warning
+
 ```yaml
 - action: script.turn_on
   metadata: {}
@@ -135,6 +140,7 @@ Arms an alarm when the button is pressed, lighting the LEDS when the alarm is ar
 ```
 
 **Button 2 - Double Click:** Arm away with 30-second warning
+
 ```yaml
 - action: script.turn_on
   metadata: {}
@@ -149,9 +155,11 @@ Arms an alarm when the button is pressed, lighting the LEDS when the alarm is ar
 *(Note: Requires a separate `arm_alarm_after_flashing_light_for_30_seconds` script)*
 
 ### Example 3: Scene Control
+
 Uses a Stateful Scene switch to keep LED in sync. Also remmember to associate the switch with the Button 3 LED using the *Lutron Sunnata Keypad LED Control* blueprint.
 
 **Button 3 - Single Click:** Activate "Movie Time" scene
+
 ```yaml
 - action: scene_switch.turn_on
   target:
@@ -159,6 +167,7 @@ Uses a Stateful Scene switch to keep LED in sync. Also remmember to associate th
 ```
 
 **Button 3 - Double Click:** Activate "Bedtime" scene
+
 ```yaml
 - action: scene_switch.turn_on
   target:
@@ -183,6 +192,7 @@ In this case, the Button 4 LED can emulate *Zone Toggle* behavior (LED lit if *a
 ```
 
 ### Example 5: Using long press and release to start and stop a script
+
 In this example, we trigger a script asynchronously that will perform a recurring action as long as the button is held.
 When the button is released, the script will stop. We can do this by setting the script's **mode** to *restart* so it can
 be interrupted, or by using *script.turn_off*.
@@ -231,6 +241,7 @@ turn off the whole house. Otherwise, turn off the room.
 ### Single Click Feels Slow
 
 If only single clicks are configured, the response should be immediate. If it feels slow:
+
 1. Check if you accidentally added a double-click or long-press action
 2. Remove any empty/placeholder actions from double-click and long-press fields
 

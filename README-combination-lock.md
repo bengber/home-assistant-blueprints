@@ -49,12 +49,13 @@ Button release events are only fired when the button is configured as ***Single 
 
 Click the badge above or use this link in Home Assistant:
 
-```
+```text
 Settings → Automations & Scenes → Blueprints → Import Blueprint
 ```
 
 Then paste the raw GitHub URL:
-```
+
+```text
 https://github.com/bengber/home-assistant-lutron-sunnata-blueprints/blob/main/blueprints/automation/lutron-sunnata-keypad-combination-lock.yaml
 ```
 
@@ -69,14 +70,16 @@ https://github.com/bengber/home-assistant-lutron-sunnata-blueprints/blob/main/bl
 Before creating an automation, you need to create two helper entities:
 
 1. **Input Text Helper** (for passcode progress):
-   ```
+
+   ```text
    Settings → Devices & Services → Helpers → Create Helper → Text
    Name: "Keypad Passcode Progress"
    Max length: 255
    ```
 
 2. **Input Datetime Helper** (for last press time):
-   ```
+
+   ```text
    Settings → Devices & Services → Helpers → Create Helper → Date and/or time
    Name: "Keypad Last Press Time"
    ✓ Date
@@ -97,7 +100,8 @@ Define your passcode as a comma-separated list of button actions. Each action sh
 - `button_raise_single_click`, `button_raise_double_click`, `button_raise_long_press`
 
 **Example:**
-```
+
+```text
 button_1_single_click,button_2_single_click,button_1_double_click,button_3_long_press
 ```
 
@@ -124,11 +128,13 @@ These are used to store the passcode state as it is being entered.
 ### Example 1: Simple 4-Button Code to Unlock Door
 
 **Passcode Sequence:**
-```
+
+```text
 button_1_single_click,button_2_single_click,button_3_single_click,button_4_single_click
 ```
 
 **Passcode Matched Action:**
+
 ```yaml
 - action: lock.unlock
   target:
@@ -141,11 +147,13 @@ button_1_single_click,button_2_single_click,button_3_single_click,button_4_singl
 ### Example 2: Complex Pattern with Mixed Actions
 
 **Passcode Sequence:**
-```
+
+```text
 button_1_double_click,button_2_long_press,button_1_single_click,button_raise_single_click
 ```
 
 **Passcode Matched Action:**
+
 ```yaml
 - action: scene.turn_on
   target:
@@ -159,11 +167,13 @@ button_1_double_click,button_2_long_press,button_1_single_click,button_raise_sin
 ### Example 3: Panic Button Sequence
 
 **Passcode Sequence:**
-```
+
+```text
 button_lower_long_press,button_raise_long_press,button_lower_long_press
 ```
 
 **Passcode Matched Action:**
+
 ```yaml
 - action: script.turn_on
   target:
@@ -178,11 +188,13 @@ button_lower_long_press,button_raise_long_press,button_lower_long_press
 ### Example 4: Hidden Admin Menu
 
 **Passcode Sequence:**
-```
+
+```text
 button_1_single_click,button_1_single_click,button_2_single_click,button_2_single_click
 ```
 
 **Passcode Matched Action:**
+
 ```yaml
 - action: input_boolean.turn_on
   target:
@@ -198,11 +210,13 @@ button_1_single_click,button_1_single_click,button_2_single_click,button_2_singl
 ### Example 5: Multi-Stage Lighting Control
 
 **Passcode Sequence:**
-```
+
+```text
 button_3_double_click,button_3_long_press
 ```
 
 **Passcode Matched Action:**
+
 ```yaml
 - action: script.turn_on
   target:
