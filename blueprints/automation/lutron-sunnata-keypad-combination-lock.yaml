@@ -1,4 +1,5 @@
-#  lutron-sunnata-keypad-combination_lock.yaml - handle click, long press/release, and double-click events from a Lutron Sunnata keypad
+#  lutron-sunnata-keypad-combination_lock.yaml - handle click, long press/release,
+#  and double-click events from a Lutron Sunnata keypad
 #  Copyright 2026 Benjamin Engber
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,17 +14,19 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+---
 blueprint:
   name: Lutron Sunnata Keypad Combination Lock
   description: >
-    Allow the Lutron RadioRA3 Sunnata Keypad to trigger a set of actions when a
-    series of button actions (single click, double click, or long press) are
-    performed in a specific order. This can be used to create a "combination lock"
-    type behavior, where a specific sequence of button presses is required to
+    Allow the Lutron RadioRA3 Sunnata Keypad to trigger a set of actions when
+    a series of button actions (single click, double click, or long press) are
+    performed in a specific order. This can create a "combination lock"
+    behavior where a specific sequence of button presses is required to
     trigger an action.
 
-    **NOTE:** In order to use the long press and double click handlers for buttons other than Raise/Lower,
-    the button behavior needs to be set as *Single Action* in the Lutron designer software.
+    **NOTE:** To use long press and double click handlers for buttons other
+    than Raise/Lower, set the button behavior to Single Action in the Lutron
+    designer software.
   domain: automation
   homeassistant:
     min_version: "2024.6.0"
@@ -50,30 +53,39 @@ blueprint:
     passcode_sequence:
       name: Passcode Sequence
       description: >
-        The sequence of button actions that will trigger the automation. Each action should be separated by a comma.
-        Valid actions are: "button_1_single_click", "button_1_double_click", "button_1_long_press", "button_1_release", etc.
+        The sequence of button actions that will trigger the automation. Each
+        action should be separated by a comma.
+        Valid actions include:
+        - button_1_single_click
+        - button_1_double_click
+        - button_1_long_press
+        - button_1_release
+        - button_raise_single_click
+        - button_raise_double_click (etc.)
       selector:
         text:
-          multiline: false
+          multiline: true
     passcode_matched_action:
       name: Passcode Matched Action
-      description: Action to perform when the assembled passcode_progress equals the configured passcode_sequence.
+      description: >-
+        Action to perform when the assembled `passcode_progress` equals the
+        configured `passcode_sequence`.
       default: []
       selector:
         action: {}
     passcode_progress:
       name: Passcode In-Progress
       description: >-
-        The passcode string currently being constructed by this blueprint. Select an `input_text` helper
-        to store/read the in-progress passcode.
+        The passcode string currently being constructed by this blueprint.
+        Select an `input_text` helper to store/read the in-progress passcode.
       selector:
         entity:
           domain: input_text
     last_press_time:
       name: Last Press Time
       description: >-
-        Timestamp of the last button press. Select an `input_datetime` helper (with time) so templates
-        can store the press time and read it back.
+        Timestamp of the last button press. Select an `input_datetime` helper
+        (with time) so templates can store the press time and read it back.
       selector:
         entity:
           domain: input_datetime
@@ -104,7 +116,9 @@ blueprint:
               unit_of_measurement: "ms"
         max_long_press_duration:
           name: Maximum Long Press Duration
-          description: Maximum time (in seconds) a long press can be held for before it is automatically considered released
+          description: >-
+            Maximum time (in seconds) a long press can be held for before it is
+            automatically considered released
           default: 60
           selector:
             number:
@@ -114,7 +128,9 @@ blueprint:
               unit_of_measurement: "s"
         next_in_sequence_timeout:
           name: Next-In-Sequence Timeout
-          description: Time (in seconds) allowed between sequence steps before the passcode resets.
+          description: >-
+            Time (in seconds) allowed between sequence steps before the
+            passcode resets.
           default: 2
           selector:
             number:
@@ -146,18 +162,39 @@ variables:
   max_long_press_duration: !input max_long_press_duration
   passcode_sequence: !input passcode_sequence
   # Normalize and validate the configured passcode sequence
-  normalized_passcode_sequence: "{{ passcode_sequence.replace(' ', '') }}"
+  normalized_passcode_sequence: '{{ passcode_sequence | regex_replace("\\s+", "") }}'
+  # Check for any invalid tokens in the passcode sequence
   invalid_token: >-
-    {% set parts = (normalized_passcode_sequence.split(',') if normalized_passcode_sequence != '' else []) %}
+    {% set parts = (
+      normalized_passcode_sequence.split(',') if normalized_passcode_sequence != '' else []
+    ) %}
     {% for p in parts %}
       {% if p not in [
-        'button_1_single_click','button_1_double_click','button_1_long_press','button_1_release',
-        'button_2_single_click','button_2_double_click','button_2_long_press','button_2_release',
-        'button_3_single_click','button_3_double_click','button_3_long_press','button_3_release',
-        'button_4_single_click','button_4_double_click','button_4_long_press','button_4_release',
-        'button_lower_single_click','button_lower_double_click','button_lower_long_press','button_lower_release',
-        'button_raise_single_click','button_raise_double_click','button_raise_long_press','button_raise_release'
-        ] %}
+        'button_1_single_click',
+        'button_1_double_click',
+        'button_1_long_press',
+        'button_1_release',
+        'button_2_single_click',
+        'button_2_double_click',
+        'button_2_long_press',
+        'button_2_release',
+        'button_3_single_click',
+        'button_3_double_click',
+        'button_3_long_press',
+        'button_3_release',
+        'button_4_single_click',
+        'button_4_double_click',
+        'button_4_long_press',
+        'button_4_release',
+        'button_lower_single_click',
+        'button_lower_double_click',
+        'button_lower_long_press',
+        'button_lower_release',
+        'button_raise_single_click',
+        'button_raise_double_click',
+        'button_raise_long_press',
+        'button_raise_release'
+      ] %}
         {{ p }}
         {% break %}
       {% endif %}
@@ -183,9 +220,16 @@ actions:
           - if:
               - condition: template
                 value_template: >-
-                  {# Only perform the timeout check if there is existing progress; otherwise treat as fresh start #}
-                  {{ (states(passcode_progress) | default('') != '') and (states(last_press_time) is not none) and (states(last_press_time).state != '') and ((as_timestamp(now()) - as_timestamp(states(last_press_time).state)) > next_in_sequence_timeout) }}
+                  {# Only perform the timeout check if there is existing progress; otherwise
+                     treat as fresh start #}
+                  {{ (states(passcode_progress) | default('') != '') and
+                     (states(last_press_time) is not none) and
+                     (states(last_press_time).state != '') and
+                     (as_timestamp(states(last_press_time).state) > 0) and
+                     ((as_timestamp(now()) - as_timestamp(states(last_press_time).state)) >
+                      next_in_sequence_timeout) }}
             then:
+              # Timeout has expired since last button press, clear progress and start again
               - service: input_text.set_value
                 target:
                   entity_id: !input passcode_progress
@@ -224,7 +268,16 @@ actions:
                           entity_id: !input passcode_progress
                         data:
                           value: >-
-                            {{ (states(passcode_progress) | default('')) ~ (',' if (states(passcode_progress) | length > 0) else '') ~ ({ 'leap_1':'button_1_long_press', 'leap_2':'button_2_long_press', 'leap_3':'button_3_long_press', 'leap_4':'button_4_long_press', 'leap_18':'button_lower_long_press', 'leap_19':'button_raise_long_press' }[leap_number]) }}
+                            {% set current = states(passcode_progress) | default('') %}
+                            {{ current ~ (',' if current | length > 0 else '') ~ (
+                               {
+                                 'leap_1':'button_1_long_press',
+                                 'leap_2':'button_2_long_press',
+                                 'leap_3':'button_3_long_press',
+                                 'leap_4':'button_4_long_press',
+                                 'leap_18':'button_lower_long_press',
+                                 'leap_19':'button_raise_long_press'
+                               }[leap_number]) }}
                       - service: input_datetime.set_datetime
                         target:
                           entity_id: !input last_press_time
@@ -255,7 +308,17 @@ actions:
                               entity_id: !input passcode_progress
                             data:
                               value: >-
-                                {{ (states(passcode_progress) | default('')) ~ (',' if (states(passcode_progress) | length > 0) else '') ~ ({ 'leap_1':'button_1_single_click', 'leap_2':'button_2_single_click', 'leap_3':'button_3_single_click', 'leap_4':'button_4_single_click', 'leap_18':'button_lower_single_click', 'leap_19':'button_raise_single_click' }[leap_number]) }}
+                                {% set current = states(passcode_progress) |
+                                   default('') %}
+                                {{ current ~ (',' if current | length > 0 else '') ~ (
+                                   {
+                                     'leap_1':'button_1_single_click',
+                                     'leap_2':'button_2_single_click',
+                                     'leap_3':'button_3_single_click',
+                                     'leap_4':'button_4_single_click',
+                                     'leap_18':'button_lower_single_click',
+                                     'leap_19':'button_raise_single_click'
+                                   }[leap_number]) }}
                     # Second press detected, wait for release
                     default:
                       - wait_for_trigger:
@@ -280,7 +343,16 @@ actions:
                                   entity_id: !input passcode_progress
                                 data:
                                   value: >-
-                                    {{ (states(passcode_progress) | default('')) ~ (',' if (states(passcode_progress) | length > 0) else '') ~ ({ 'leap_1':'button_1_long_press', 'leap_2':'button_2_long_press', 'leap_3':'button_3_long_press', 'leap_4':'button_4_long_press', 'leap_18':'button_lower_long_press', 'leap_19':'button_raise_long_press' }[leap_number]) }}
+                                    {% set current = states(passcode_progress) | default('') %}
+                                    {{ current ~ (',' if current | length > 0 else '') ~ (
+                                       {
+                                         'leap_1':'button_1_long_press',
+                                         'leap_2':'button_2_long_press',
+                                         'leap_3':'button_3_long_press',
+                                         'leap_4':'button_4_long_press',
+                                         'leap_18':'button_lower_long_press',
+                                         'leap_19':'button_raise_long_press'
+                                       }[leap_number]) }}
                         # Double click confirmed
                         default:
                           - service: input_text.set_value
@@ -288,7 +360,16 @@ actions:
                               entity_id: !input passcode_progress
                             data:
                               value: >-
-                                {{ (states(passcode_progress) | default('')) ~ (',' if (states(passcode_progress) | length > 0) else '') ~ ({ 'leap_1':'button_1_double_click', 'leap_2':'button_2_double_click', 'leap_3':'button_3_double_click', 'leap_4':'button_4_double_click', 'leap_18':'button_lower_double_click', 'leap_19':'button_raise_double_click' }[leap_number]) }}
+                                {% set current = states(passcode_progress) | default('') %}
+                                {{ current ~ (',' if current | length > 0 else '') ~ (
+                                   {
+                                     'leap_1':'button_1_double_click',
+                                     'leap_2':'button_2_double_click',
+                                     'leap_3':'button_3_double_click',
+                                     'leap_4':'button_4_double_click',
+                                     'leap_18':'button_lower_double_click',
+                                     'leap_19':'button_raise_double_click'
+                                   }[leap_number]) }}
 
           - service: input_datetime.set_datetime
             target:
@@ -300,11 +381,33 @@ actions:
               - conditions:
                   - condition: template
                     value_template: >-
-                      {{ (states(passcode_progress) | default('')) != '' and (states(passcode_progress) | default('')) == normalized_passcode_sequence }}
+                      {{ (states(passcode_progress) | default('')) != '' and
+                         not normalized_passcode_sequence.startswith(states(passcode_progress)) }}
                 sequence:
-                  - choose:
-                      - conditions: ["{{ passcode_matched_action | length > 0 }}"]
-                        sequence: !input passcode_matched_action
+                  - service: persistent_notification.create
+                    data:
+                      title: "Keypad passcode progress reset"
+                      message: >-
+                        Passcode progress "{{ states(passcode_progress) | default('') }}"
+                        does not match the start of the configured passcode sequence and has been reset.
+                  - service: input_text.set_value
+                    target:
+                      entity_id: !input passcode_progress
+                    data:
+                      value: ""
+                  - service: input_datetime.set_datetime
+                    target:
+                      entity_id: !input last_press_time
+                    data:
+                      datetime: "1970-01-01 00:00:00"
+              - conditions:
+                  - condition: template
+                    value_template: >-
+                      {{ (states(passcode_progress) | default('')) != '' and
+                         (states(passcode_progress) | default('')) ==
+                         normalized_passcode_sequence }}
+                sequence:
+                  - sequence: !input passcode_matched_action
                   - service: input_text.set_value
                     target:
                       entity_id: !input passcode_progress
@@ -319,5 +422,10 @@ actions:
                     data:
                       title: "Keypad passcode matched"
                       message: "Passcode sequence matched and action executed."
+
+          - service: persistent_notification.create
+            data:
+              title: "Keypad passcode progress"
+              message: "Current passcode_progress: {{ states(passcode_progress) | default('') }}"
 
 mode: single
